@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Basılı Tutma CAPTCHA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background: #0f172a;
+      font-family: "Inter", sans-serif;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .wrapper {
+      width: 360px;
+      background: #1e293b;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      padding: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      background: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      color: #e2e8f0;
+      font-size: 15px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 14px;
+    }
+
+    #holdButton {
+      width: 100%;
+      padding: 14px;
+      background: #3b82f6;
+      color: white;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 12px;
+      transition: 0.2s;
+      user-select: none;
+    }
+
+    #holdButton:active {
+      background: #2563eb;
+      transform: scale(0.98);
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 16px;
+      min-height: 24px;
+      font-size: 15px;
+      color: #94a3b8;
+    }
+
+    #success {
+      display: none;
+      margin-top: 18px;
+      font-size: 20px;
+      text-align: center;
+      color: #22c55e;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <h2>CAPTCHA Doğrulaması</h2>
+
+    <input placeholder="Kullanıcı adı">
+    <input placeholder="Şifre" type="password">
+
+    <div id="message">Butona basılı tutmanız istenecek.</div>
+
+    <button id="holdButton">Basılı Tut</button>
+
+    <div id="success">✔ Doğrulama Başarılı!</div>
+  </div>
+
+  <script>
+    const holdButton = document.getElementById("holdButton");
+    const message = document.getElementById("message");
+    const success = document.getElementById("success");
+
+    let targetTimes = [];     // random süreler
+    let currentRound = 0;     // 0–3
+    let startTime = 0;
+
+    function resetCaptcha() {
+      // 4 random süre (1.5–3.5 saniye arası)
+      targetTimes = Array.from({ length: 4 }, () =>
+        (1.5 + Math.random() * 2).toFixed(2)
+      );
+
+      currentRound = 0;
+      success.style.display = "none";
+      message.innerHTML = `Görev 1/4: Butona basılı tutun.`;
+    }
+
+    resetCaptcha();
+
+    holdButton.addEventListener("mousedown", () => {
+      startTime = Date.now();
+      holdButton.innerText = "Tutuyorsun...";
+    });
+
+    holdButton.addEventListener("mouseup", () => {
+      const elapsed = (Date.now() - startTime) / 1000;
+
+      const required = targetTimes[currentRound];
+
+      if (elapsed >= required) {
+        // Doğru tuttu
+        currentRound++;
+
+        if (currentRound === 4) {
+          message.innerHTML = "";
+          success.style.display = "block";
+          holdButton.innerText = "Tamamlandı";
+          holdButton.style.background = "#22c55e";
+          holdButton.disabled = true;
+          return;
+        }
+
+        message.innerHTML = `Doğru! Şimdi görev ${currentRound + 1}/4`;
+        holdButton.innerText = "Basılı Tut";
+      } else {
+        // Hatalı → full reset
+        message.innerHTML = `<span style="color:#ef4444">Yeterince uzun tutmadınız. CAPTCHA sıfırlandı.</span>`;
+        holdButton.innerText = "Basılı Tut";
+
+        setTimeout(() => {
+          resetCaptcha();
+          holdButton.style.background = "#3b82f6";
+        }, 800);
+      }
+    });
+
+    // Mobil uyum için touch event
+    holdButton.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      startTime = Date.now();
+      holdButton.innerText = "Tutuyorsun...";
+    });
+
+    holdButton.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      holdButton.dispatchEvent(new Event("mouseup"));
+    });
+  </script>
+
+</body>
+</html>
