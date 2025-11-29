@@ -30,13 +30,24 @@
       letter-spacing: 1px;
     }
 
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      background: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      color: #e2e8f0;
+      font-size: 15px;
+    }
+
     .captcha-box {
       text-align: center;
       background: #0f172a;
       padding: 12px;
       border-radius: 8px;
       border: 1px solid #475569;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: bold;
       letter-spacing: 6px;
       margin-bottom: 10px;
@@ -53,6 +64,7 @@
       color: #94a3b8;
       margin-top: 8px;
       font-size: 15px;
+      min-height: 20px;
     }
 
     #success {
@@ -72,11 +84,14 @@
 
     <h2>CAPTCHA Doğrulaması</h2>
 
+    <input placeholder="Kullanıcı adı">
+    <input placeholder="Şifre" type="password">
+
     <div id="captchaText" class="captcha-box"></div>
 
     <canvas id="captchaCanvas" width="320" height="220"></canvas>
 
-    <div id="progress">Lütfen yukarıdaki kodu sırayla tıklayın.</div>
+    <div id="progress"></div>
 
     <div id="success">✔ Doğrulama Başarılı!</div>
 
@@ -91,30 +106,37 @@
     const captchaText = document.getElementById("captchaText");
 
     const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-    const code = Array.from({ length: 5 })
-      .map(() => letters[Math.floor(Math.random() * letters.length)]);
 
-    captchaText.innerHTML = code.join("");
-
+    let code = [];
     let currentIndex = 0;
-    progress.innerHTML = "CAPTCHA kodunu sırayla tıklayın.";
-
     let falling = [];
+
+    function generateCaptcha() {
+      code = Array.from({ length: 5 })
+        .map(() => letters[Math.floor(Math.random() * letters.length)]);
+      captchaText.innerHTML = code.join("");
+      currentIndex = 0;
+
+      progress.innerHTML = "Lütfen CAPTCHA kodunu sırayla tıklayın.";
+
+      falling = [];
+      for (let i = 0; i < 8; i++) {
+        falling.push(spawnLetter(i === 0));
+      }
+    }
 
     function spawnLetter(isTarget) {
       return {
         letter: isTarget ? code[currentIndex] : letters[Math.floor(Math.random() * letters.length)],
         x: Math.random() * 260 + 20,
         y: -20,
-        speed: isTarget ? 2.2 : 1.4 + Math.random() * 2,
+        speed: isTarget ? 2.4 : 1.4 + Math.random() * 2,
         drift: (Math.random() - 0.5) * 1.8,
         isTarget
       };
     }
 
-    for (let i = 0; i < 8; i++) {
-      falling.push(spawnLetter(i === 0));
-    }
+    generateCaptcha();
 
     function draw() {
       ctx.fillStyle = "#000";
@@ -152,13 +174,15 @@
 
         if (hit) {
           if (f.isTarget) {
+            // ✔ doğru tıklama
             burst(px, py);
 
             currentIndex++;
+
             captchaText.innerHTML =
-              code
-                .map((c, i) => i < currentIndex ? `<span style="color:#22c55e">${c}</span>` : c)
-                .join("");
+              code.map((c, i) =>
+                i < currentIndex ? `<span style="color:#22c55e">${c}</span>` : c
+              ).join("");
 
             if (currentIndex === 5) {
               success.style.display = "block";
@@ -166,6 +190,7 @@
               return;
             }
 
+            // sıradaki hedef için resetle
             falling = [];
             for (let i = 0; i < 8; i++) {
               falling.push(spawnLetter(i === 0));
@@ -173,14 +198,19 @@
 
             progress.innerHTML = "Doğru! Sıradaki harfi tıklayın.";
           } else {
-            progress.innerHTML = `<span style="color:#ef4444">Yanlış harf! Tekrar deneyin.</span>`;
+            // ❌ yanlış → BAŞA DÖN
+            progress.innerHTML = `<span style="color:#ef4444">Yanlış! CAPTCHA sıfırlandı.</span>`;
+            success.style.display = "none";
+            setTimeout(() => {
+              generateCaptcha();
+            }, 700);
           }
         }
       }
     });
 
     function burst(x, y) {
-      for (let i = 0; i < 20; i++) {
+      for (let i = 0; i < 25; i++) {
         ctx.fillStyle = "#22c55e";
         ctx.fillRect(
           x + (Math.random() - 0.5) * 20,
