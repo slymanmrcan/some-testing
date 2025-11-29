@@ -1,126 +1,119 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Mouse Click Falling Captcha</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Advanced Trick CAPTCHA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
       background: #0f172a;
+      font-family: "Inter", sans-serif;
       color: #e2e8f0;
-      font-family: sans-serif;
-      padding: 40px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding: 40px;
     }
 
-    .form-box {
-      background: #1e293b;
-      padding: 25px;
-      border-radius: 10px;
+    .box {
       width: 350px;
-      margin-bottom: 30px;
+      background: #1e293b;
       border: 1px solid #334155;
+      padding: 20px;
+      border-radius: 12px;
     }
 
-    input {
+    #captchaCanvas {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #475569;
-      background: #0f172a;
-      color: #e2e8f0;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 6px;
-      border: none;
-      background: #3b82f6;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    #canvasBox {
-      border: 2px solid #334155;
       border-radius: 10px;
-      overflow: hidden;
-      margin-top: 10px;
+      border: 2px solid #334155;
+      margin-top: 16px;
     }
 
-    .status {
-      margin-top: 10px;
+    #status {
+      margin-top: 16px;
       text-align: center;
-      font-size: 16px;
+      font-size: 15px;
+      color: #94a3b8;
+    }
+
+    .success {
+      color: #22c55e !important;
+    }
+
+    .fail {
+      color: #ef4444 !important;
     }
   </style>
 </head>
 
 <body>
+  <div class="box">
+    <h2 style="text-align:center; margin:0;">Karmaşık CAPTCHA</h2>
+    <p style="font-size:14px; text-align:center;">Doğru harfi yakala ama dikkat et…</p>
 
-  <div class="form-box">
-    <h3>Mouse Click Falling CAPTCHA</h3>
-
-    <input placeholder="Email" />
-    <input placeholder="Şifre" type="password" />
-
-    <div id="canvasBox">
-      <canvas id="captchaCanvas" width="300" height="200"></canvas>
-    </div>
-
-    <div id="status" class="status">Aşağı düşen doğru harfe tıkla</div>
-
-    <button id="loginBtn" disabled>Giriş Yap</button>
+    <canvas id="captchaCanvas" width="320" height="220"></canvas>
+    <div id="status">Doğru harfi tıklayın.</div>
   </div>
 
   <script>
     const canvas = document.getElementById("captchaCanvas");
     const ctx = canvas.getContext("2d");
-
     const statusEl = document.getElementById("status");
-    const loginBtn = document.getElementById("loginBtn");
 
-    // Captcha harfi
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const targetLetter = letters[Math.floor(Math.random() * letters.length)];
-
-    let falling = {
-      x: Math.random() * 250 + 25,
-      y: -20,
-      letter: targetLetter,
-      speed: 2 + Math.random() * 2
-    };
+    const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    const target = letters[Math.floor(Math.random() * letters.length)];
 
     let verified = false;
 
+    // Çoklu düşen harfler (zorluk burada)
+    const items = [];
+    for (let i = 0; i < 8; i++) {
+      items.push({
+        letter: (i === 0 ? target : letters[Math.floor(Math.random() * letters.length)]),
+        x: Math.random() * 260 + 20,
+        y: Math.random() * -300,
+        speed: 1.5 + Math.random() * 2.5,
+        drift: (Math.random() - 0.5) * 2
+      });
+    }
+
+    // Doğru harf gizli şekilde daha hızlı (kullanıcı anlamaz)
+    items[0].speed *= 1.4;
+    items[0].drift *= 1.5;
+
     function draw() {
-      ctx.fillStyle = "black";
+      if (verified) return;
+
+      ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // harf
-      ctx.fillStyle = "#38bdf8";
-      ctx.font = "32px Arial";
-      ctx.fillText(falling.letter, falling.x, falling.y);
+      items.forEach(it => {
+        // harfi çiz
+        ctx.fillStyle = "#38bdf8";
+        ctx.font = "28px Arial";
+        ctx.fillText(it.letter, it.x, it.y);
 
-      falling.y += falling.speed;
+        // karmaşık hareket
+        it.y += it.speed;
+        it.x += it.drift;
 
-      // reset – aşağı düşerse yeniden deneme
-      if (falling.y > 220 && !verified) {
-        falling.x = Math.random() * 250 + 25;
-        falling.y = -20;
-      }
+        // kenarlardan sekme efekti
+        if (it.x < 10 || it.x > 290) it.drift *= -1;
 
-      if (!verified) requestAnimationFrame(draw);
+        // aşağı düştüyse resetle
+        if (it.y > 260) {
+          it.y = -30;
+          it.x = Math.random() * 260 + 20;
+        }
+      });
+
+      requestAnimationFrame(draw);
     }
 
     draw();
 
-    // Mouse click detection
+    // hit detection
     canvas.addEventListener("click", (e) => {
       if (verified) return;
 
@@ -128,20 +121,36 @@
       const px = e.clientX - rect.left;
       const py = e.clientY - rect.top;
 
-      // Harfin bounding box'ı
-      const hitX = px > falling.x - 10 && px < falling.x + 30;
-      const hitY = py > falling.y - 30 && py < falling.y + 10;
+      for (let it of items) {
+        const hitX = px > it.x - 10 && px < it.x + 20;
+        const hitY = py > it.y - 30 && px < it.x + 20;
 
-      if (hitX && hitY) {
-        verified = true;
-        statusEl.innerHTML = "Doğru harfe tıkladın ✔";
-        statusEl.style.color = "#22c55e";
-        loginBtn.disabled = false;
-      } else {
-        statusEl.innerHTML = "Yanlış yere tıkladın ✖";
-        statusEl.style.color = "#ef4444";
+        const hit = px > it.x - 5 && px < it.x + 20 && py > it.y - 25 && py < it.y + 5;
+
+        if (hit) {
+          if (it.letter === target) {
+            verified = true;
+            statusEl.textContent = `Doğru! Harf: ${target}`;
+            statusEl.className = "success";
+
+            // küçük bir patlama efekti
+            explosion(px, py);
+          } else {
+            statusEl.textContent = "Yanlış harfe tıkladın!";
+            statusEl.className = "fail";
+          }
+        }
       }
     });
+
+    function explosion(x, y) {
+      const size = 6;
+      ctx.fillStyle = "#22c55e";
+      for (let i = 0; i < 20; i++) {
+        ctx.fillRect(x + Math.random() * size - size / 2, y + Math.random() * size - size / 2, 3, 3);
+      }
+    }
+
   </script>
 
 </body>
