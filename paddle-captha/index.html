@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Falling CAPTCHA Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    .card {
+      background: #020617;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      padding: 24px;
+      display: flex;
+      gap: 24px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border-right: 1px solid #1f2937;
+      padding-right: 24px;
+    }
+
+    .right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #f9fafb;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #9ca3af;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #374151;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
+    }
+
+    button {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.15s ease;
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-primary:disabled {
+      background: #4b5563;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: #9ca3af;
+      border: 1px solid #4b5563;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      align-items: center;
+    }
+
+    .captcha-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .captcha-text {
+      font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 20px;
+      letter-spacing: 4px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: #020617;
+      border: 1px solid #1f2937;
+      display: inline-block;
+    }
+
+    .status {
+      font-size: 13px;
+      min-height: 18px;
+    }
+
+    .status.ok {
+      color: #4ade80;
+    }
+
+    .status.err {
+      color: #f97373;
+    }
+
+    canvas {
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%, #000 100%);
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      display: block;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        flex-direction: column;
+      }
+      .left {
+        border-right: none;
+        border-bottom: 1px solid #1f2937;
+        padding-right: 0;
+        padding-bottom: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="left">
+      <h1>Login + “Falling CAPTCHA”</h1>
+      <p class="hint">
+        Barı <strong>← → ok tuşlarıyla</strong> hareket ettir. Yukarıdan düşen harfleri yakalayıp
+        CAPTCHA metnini sırayla oluştur.
+      </p>
+
+      <div class="form-row">
+        <div>
+          <label for="username">Kullanıcı Adı</label>
+          <input id="username" type="text" placeholder="kullanici" autocomplete="off" />
+        </div>
+        <div>
+          <label for="password">Şifre</label>
+          <input id="password" type="password" placeholder="••••••••" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button id="loginBtn" class="btn-primary" disabled>Giriş Yap</button>
+        <button id="resetBtn" class="btn-ghost" type="button">CAPTCHA’yı Yenile</button>
+      </div>
+      <div id="loginStatus" class="status"></div>
+    </div>
+
+    <div class="right">
+      <div class="captcha-info">
+        <div>
+          <span>Hedef CAPTCHA:</span>
+          <span id="captchaText" class="captcha-text">----</span>
+        </div>
+        <div>
+          Yakaladığın harfler:
+          <span id="collectedText" class="captcha-text" style="font-size:16px;letter-spacing:3px;">&nbsp;</span>
+        </div>
+        <div id="captchaStatus" class="status"></div>
+      </div>
+
+      <canvas id="captchaCanvas" width="400" height="260"></canvas>
+      <div class="hint">
+        Kontroller: ← → (barı hareket ettir) • Harfleri sırayla yakalayarak CAPTCHA’yı tamamla.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Basit random CAPTCHA üretimi
+    const CAPTCHA_LENGTH = 4;
+    const LETTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // okunabilir karakter seti
+
+    const captchaTextEl = document.getElementById("captchaText");
+    const collectedTextEl = document.getElementById("collectedText");
+    const captchaStatusEl = document.getElementById("captchaStatus");
+    const loginStatusEl = document.getElementById("loginStatus");
+    const loginBtn = document.getElementById("loginBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    const canvas = document.getElementById("captchaCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Oyun state
+    let captchaTarget = "";
+    let collected = "";
+    let isVerified = false;
+
+    // Bar / paddle
+    const paddle = {
+      width: 90,
+      height: 12,
+      x: canvas.width / 2 - 45,
+      y: canvas.height - 30,
+      speed: 6,
+      movingLeft: false,
+      movingRight: false,
+    };
+
+    // Düşen harfler
+    const fallingLetters = [];
+    const LETTER_COUNT = 8;
+
+    function randomCaptcha() {
+      let result = "";
+      for (let i = 0; i < CAPTCHA_LENGTH; i++) {
+        result += LETTERS[Math.floor(Math.random() * LETTERS.length)];
+      }
+      return result;
+    }
+
+    function initCaptcha() {
+      captchaTarget = randomCaptcha();
+      collected = "";
+      isVerified = false;
+
+      captchaTextEl.textContent = captchaTarget;
+      collectedTextEl.textContent = "";
+      captchaStatusEl.textContent = "Hedefi sırayla topla.";
+      captchaStatusEl.className = "status";
+      loginStatusEl.textContent = "";
+      loginBtn.disabled = true;
+    }
+
+    function createLetter() {
+      // Hedef harflerden birine biraz daha fazla ağırlık verebiliriz
+      const bias = Math.random() < 0.6;
+      const ch = bias
+        ? captchaTarget[Math.floor(Math.random() * captchaTarget.length)]
+        : LETTERS[Math.floor(Math.random() * LETTERS.length)];
+
+      return {
+        char: ch,
+        x: Math.random() * (canvas.width - 20) + 10,
+        y: -Math.random() * 100 - 20,
+        speed: 1.5 + Math.random() * 1.5,
+        active: true,
+      };
+    }
+
+    function initLetters() {
+      fallingLetters.length = 0;
+      for (let i = 0; i < LETTER_COUNT; i++) {
+        fallingLetters.push(createLetter());
+      }
+    }
+
+    function resetLetter(letter) {
+      const newLetter = createLetter();
+      letter.char = newLetter.char;
+      letter.x = newLetter.x;
+      letter.y = newLetter.y;
+      letter.speed = newLetter.speed;
+      letter.active = true;
+    }
+
+    function handleCollision(letter) {
+      if (!letter.active || isVerified) return;
+
+      const expectedChar = captchaTarget[collected.length];
+      const clickedChar = letter.char;
+
+      if (!expectedChar) return; // hedef zaten tamamlanmış olabilir
+
+      if (clickedChar === expectedChar) {
+        collected += clickedChar;
+        collectedTextEl.textContent = collected;
+
+        if (collected === captchaTarget) {
+          isVerified = true;
+          captchaStatusEl.textContent = "CAPTCHA doğrulandı.";
+          captchaStatusEl.className = "status ok";
+          loginBtn.disabled = false;
+        } else {
+          captchaStatusEl.textContent =
+            "Devam et: sıradaki harfi yakala (" + captchaTarget[collected.length] + ")";
+          captchaStatusEl.className = "status";
+        }
+      } else {
+        // hata durumunda istersen sıfırlayabiliriz
+        collected = "";
+        collectedTextEl.textContent = "";
+        captchaStatusEl.textContent =
+          "Yanlış harf yakaladın, baştan dene.";
+        captchaStatusEl.className = "status err";
+        loginBtn.disabled = true;
+        isVerified = false;
+      }
+
+      // yakalanan harfi resetle
+      letter.active = false;
+      letter.y = canvas.height + 50; // Ekranın dışına it, sıradaki frame'de resetlenecek
+    }
+
+    function update() {
+      // Paddle hareketi
+      if (paddle.movingLeft) {
+        paddle.x -= paddle.speed;
+      } else if (paddle.movingRight) {
+        paddle.x += paddle.speed;
+      }
+
+      if (paddle.x < 0) paddle.x = 0;
+      if (paddle.x + paddle.width > canvas.width) {
+        paddle.x = canvas.width - paddle.width;
+      }
+
+      // Harfleri güncelle
+      for (const letter of fallingLetters) {
+        letter.y += letter.speed;
+
+        // Çarpışma kontrolü (basit AABB)
+        const fontSize = 22;
+        const letterTop = letter.y - fontSize;
+        const letterBottom = letter.y;
+        const letterLeft = letter.x - 8;
+        const letterRight = letter.x + 8;
+
+        const paddleTop = paddle.y;
+        const paddleBottom = paddle.y + paddle.height;
+        const paddleLeft = paddle.x;
+        const paddleRight = paddle.x + paddle.width;
+
+        const isColliding =
+          letterBottom >= paddleTop &&
+          letterTop <= paddleBottom &&
+          letterRight >= paddleLeft &&
+          letterLeft <= paddleRight;
+
+        if (isColliding) {
+          handleCollision(letter);
+        }
+
+        // Ekran dışına çıkanları resetle
+        if (letter.y > canvas.height + 30) {
+          resetLetter(letter);
+        }
+      }
+    }
+
+    function draw() {
+      // Arka plan
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Hafif grid / glow
+      const grad = ctx.createRadialGradient(
+        canvas.width / 2,
+        0,
+        0,
+        canvas.width / 2,
+        canvas.height / 2,
+        canvas.height
+      );
+      grad.addColorStop(0, "rgba(59,130,246,0.25)");
+      grad.addColorStop(0.5, "rgba(15,23,42,0.3)");
+      grad.addColorStop(1, "rgba(0,0,0,0.9)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Paddle
+      ctx.fillStyle = "#3b82f6";
+      ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+
+      // Paddle üst çizgisi
+      ctx.fillStyle = "#93c5fd";
+      ctx.fillRect(paddle.x, paddle.y, paddle.width, 2);
+
+      // Harfler
+      ctx.fillStyle = "#e5e7eb";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "bold 22px SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, 'Courier New', monospace";
+
+      for (const letter of fallingLetters) {
+        // Hedef harfi ise farklı renk
+        if (captchaTarget.includes(letter.char)) {
+          ctx.fillStyle = "#22c55e";
+        } else {
+          ctx.fillStyle = "#e5e7eb";
+        }
+        ctx.fillText(letter.char, letter.x, letter.y);
+      }
+
+      // Üst bilgi
+      ctx.font = "11px system-ui";
+      ctx.fillStyle = "#9ca3af";
+      ctx.textAlign = "left";
+      ctx.fillText("← → ile barı hareket ettir, doğru harfleri sırayla yakala.", 10, 14);
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    // Klavye eventleri
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") {
+        paddle.movingLeft = true;
+      } else if (e.key === "ArrowRight") {
+        paddle.movingRight = true;
+      }
+    });
+
+    window.addEventListener("keyup", (e) => {
+      if (e.key === "ArrowLeft") {
+        paddle.movingLeft = false;
+      } else if (e.key === "ArrowRight") {
+        paddle.movingRight = false;
+      }
+    });
+
+    // Login butonu (örnek)
+    loginBtn.addEventListener("click", () => {
+      if (!isVerified) {
+        loginStatusEl.textContent = "Önce CAPTCHA’yı tamamla.";
+        loginStatusEl.className = "status err";
+        return;
+      }
+      loginStatusEl.textContent = "Giriş kabul edildi (demo).";
+      loginStatusEl.className = "status ok";
+    });
+
+    // Reset
+    resetBtn.addEventListener("click", () => {
+      initCaptcha();
+      initLetters();
+    });
+
+    // Init
+    initCaptcha();
+    initLetters();
+    loop();
+  </script>
+</body>
+</html>
