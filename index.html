@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Demo Hub</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 24px;
+      transition: 0.25s ease;
+      border: 1px solid #334155;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #3b82f6;
+      box-shadow: 0 0 18px rgba(59, 130, 246, 0.25);
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #cbd5e1;
+    }
+
+    .card p {
+      margin: 0;
+      line-height: 1.5;
+      font-size: 15px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Project Demo Hub</h1>
+
+    <div class="grid">
+
+      <a href="./falling-captcha/" class="card">
+        <h2>Falling Captcha</h2>
+        <p>Canvas tabanlı oyunlu captcha test alanı.</p>
+      </a>
+
+      <a href="./shopping-app/" class="card">
+        <h2>Shopping App</h2>
+        <p>Alışveriş demo projesi, UI & DB testler.</p>
+      </a>
+
+      <a href="./ui-tests/" class="card">
+        <h2>UI Tests</h2>
+        <p>Arayüz testleri ve komponent örnekleri.</p>
+      </a>
+
+      <a href="./other-demo/" class="card">
+        <h2>Other Demo</h2>
+        <p>Ekstra sayfalar ve farklı denemeler.</p>
+      </a>
+
+    </div>
+  </div>
+</body>
+</html>
