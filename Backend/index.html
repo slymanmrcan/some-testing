@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.NET Core Enterprise Patterns Dokümantasyonu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #e0e0e0;
+            background: #0d1117;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: #161b22;
+            border-right: 1px solid #30363d;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .sidebar h2 {
+            color: #58a6ff;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #30363d;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar li {
+            margin-bottom: 8px;
+        }
+        
+        .sidebar a {
+            color: #8b949e;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .sidebar a:hover {
+            background: #21262d;
+            color: #58a6ff;
+        }
+        
+        .sidebar .sub-menu {
+            margin-left: 15px;
+            margin-top: 5px;
+        }
+        
+        .sidebar .sub-menu a {
+            font-size: 13px;
+            color: #6e7681;
+        }
+        
+        .container {
+            margin-left: 280px;
+            padding: 40px 60px;
+            max-width: 1400px;
+        }
+        
+        h1 {
+            color: #f0f6fc;
+            font-size: 36px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #30363d;
+        }
+        
+        h2 {
+            color: #58a6ff;
+            font-size: 28px;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            padding-top: 20px;
+        }
+        
+        h3 {
+            color: #79c0ff;
+            font-size: 22px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #a5d6ff;
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            color: #c9d1d9;
+        }
+        
+        .info-box {
+            background: #161b22;
+            border-left: 4px solid #58a6ff;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 6px;
+        }
+        
+        .warning-box {
+            background: #1c1917;
+            border-left: 4px solid #f85149;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 6px;
+        }
+        
+        .success-box {
+            background: #0d1b13;
+            border-left: 4px solid #3fb950;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 6px;
+        }
+        
+        .note-box {
+            background: #1c1810;
+            border-left: 4px solid #d29922;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 6px;
+        }
+        
+        code {
+            background: #161b22;
+            color: #79c0ff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+        }
+        
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+            color: #c9d1d9;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: #161b22;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: #21262d;
+            color: #58a6ff;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px;
+            border-top: 1px solid #30363d;
+            color: #c9d1d9;
+        }
+        
+        tr:hover {
+            background: #0d1117;
+        }
+
+        .comparison-table td:first-child {
+            font-weight: 600;
+            color: #79c0ff;
+        }
+
+        strong {
+            color: #f0f6fc;
+        }
+
+        .highlight {
+            background: #1f2937;
+            color: #fbbf24;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #484f58;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>İçindekiler</h2>
+        <ul>
+            <li><a href="#generic-repo">Generic Repository Pattern</a>
+                <ul class="sub-menu">
+                    <li><a href="#generic-repo-problem">Problem Analizi</a></li>
+                    <li><a href="#generic-repo-solution">Çözüm Yapısı</a></li>
+                    <li><a href="#generic-repo-when">Kullanım Senaryoları</a></li>
+                </ul>
+            </li>
+            <li><a href="#unit-of-work">Unit of Work Pattern</a>
+                <ul class="sub-menu">
+                    <li><a href="#uow-transaction">Transaction Yönetimi</a></li>
+                    <li><a href="#uow-implementation">Implementasyon</a></li>
+                </ul>
+            </li>
+            <li><a href="#cqrs">CQRS Pattern</a>
+                <ul class="sub-menu">
+                    <li><a href="#cqrs-concept">Temel Konsept</a></li>
+                    <li><a href="#cqrs-mediatr">MediatR Entegrasyonu</a></li>
+                    <li><a href="#cqrs-when">Ne Zaman Kullanılır</a></li>
+                </ul>
+            </li>
+            <li><a href="#mediatr">MediatR Pattern</a>
+                <ul class="sub-menu">
+                    <li><a href="#mediatr-concept">Mediator Kavramı</a></li>
+                    <li><a href="#mediatr-pipeline">Pipeline Behaviors</a></li>
+                </ul>
+            </li>
+            <li><a href="#response-pattern">Response Pattern</a></li>
+            <li><a href="#result-pattern">Result Pattern</a></li>
+            <li><a href="#multi-db">Multiple Database Kullanımı</a>
+                <ul class="sub-menu">
+                    <li><a href="#multi-db-same">Aynı Tip DB</a></li>
+                    <li><a href="#multi-db-different">Farklı Tip DB</a></li>
+                </ul>
+            </li>
+            <li><a href="#advanced">İleri Seviye Konular</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <h1>.NET Core Enterprise Patterns ve Mimari Yapılar</h1>
+        
+        <div class="info-box">
+            <strong>Dokümantasyon Kapsamı:</strong> Bu doküman, enterprise seviye .NET Core uygulamalarında kullanılan design pattern'leri, mimari yaklaşımları ve best practice'leri detaylı olarak ele almaktadır. Her pattern için problem analizi, çözüm yaklaşımı ve kullanım senaryoları açıklanmıştır.
+        </div>
+
+        <h2 id="generic-repo">Generic Repository Pattern</h2>
+        
+        <h3 id="generic-repo-problem">Problem Analizi</h3>
+        <p>Geleneksel repository implementasyonlarında her entity için ayrı repository class'ları oluşturulması gerekmektedir. Bu yaklaşım şu problemleri doğurur:</p>
+        
+        <ul>
+            <li>Her entity için tekrarlanan CRUD metodları</li>
+            <li>Kod duplikasyonu ve bakım maliyeti artışı</li>
+            <li>Yeni entity eklendiğinde manuel repository oluşturma zorunluluğu</li>
+            <li>Tutarsız metod isimlendirmeleri ve implementasyonlar</li>
+        </ul>
+
+        <h3 id="generic-repo-solution">Çözüm Yapısı</h3>
+        <p>Generic Repository, C# generic type sistemini kullanarak tüm entity'ler için ortak bir repository interface ve implementasyonu sağlar. Bu yaklaşım şu bileşenlerden oluşur:</p>
+
+        <h4>Temel Interface Yapısı</h4>
+        <p>Generic Repository interface'i tipik olarak şu metodları içerir:</p>
+        <ul>
+            <li><code>GetByIdAsync(TId id)</code> - Primary key ile tekil kayıt sorgulama</li>
+            <li><code>GetAllAsync()</code> - Tüm kayıtları sorgulama</li>
+            <li><code>FindAsync(Expression&lt;Func&lt;T, bool&gt;&gt; predicate)</code> - Lambda expression ile filtreleme</li>
+            <li><code>AddAsync(T entity)</code> - Yeni kayıt ekleme</li>
+            <li><code>AddRangeAsync(IEnumerable&lt;T&gt; entities)</code> - Toplu kayıt ekleme</li>
+            <li><code>Update(T entity)</code> - Kayıt güncelleme</li>
+            <li><code>Remove(T entity)</code> - Kayıt silme</li>
+            <li><code>RemoveRange(IEnumerable&lt;T&gt; entities)</code> - Toplu silme</li>
+        </ul>
+
+        <div class="info-box">
+            <strong>IQueryable vs IEnumerable:</strong> Generic Repository'de <code>GetAll()</code> metodunun <code>IQueryable&lt;T&gt;</code> dönmesi önerilir. Bu sayede sorgular veritabanına gitmeden önce composition yapılabilir (deferred execution). <code>IEnumerable&lt;T&gt;</code> kullanımı tüm veriyi memory'ye çeker ve performans problemlerine yol açar.
+        </div>
+
+        <h3 id="generic-repo-when">Kullanım Senaryoları ve Kısıtlamalar</h3>
+        
+        <h4>Uygun Kullanım Senaryoları:</h4>
+        <ul>
+            <li>Standart CRUD operasyonları gerektiren entity'ler</li>
+            <li>Basit sorgulama ihtiyaçları olan projeler</li>
+            <li>Hızlı prototipleme ve MVP geliştirme</li>
+        </ul>
+
+        <h4>Uygun Olmayan Senaryolar:</h4>
+        <ul>
+            <li>Karmaşık business logic içeren domain modeller</li>
+            <li>Entity'ye özel sorgulama gereksinimleri (örn: <code>GetUserByEmail</code>, <code>GetActiveProducts</code>)</li>
+            <li>Aggregate root'lar ve domain-driven design yaklaşımları</li>
+        </ul>
+
+        <div class="warning-box">
+            <strong>Anti-Pattern Uyarısı:</strong> Generic Repository'yi her durumda kullanmak bir anti-pattern'dir. Entity Framework Core zaten bir Repository Pattern implementasyonudur (DbSet). Generic Repository üzerine bir katman daha eklemek gereksiz abstraction yaratabilir. Kullanım kararı proje gereksinimlerine göre verilmelidir.
+        </div>
+
+        <h4>Genişletme Stratejisi:</h4>
+        <p>Entity'ye özel metodlar gerektiğinde inheritance kullanılır:</p>
+        <p><code>IUserRepository : IGenericRepository&lt;User&gt;</code> şeklinde extend edilerek özel metodlar eklenebilir.</p>
+
+        <h2 id="unit-of-work">Unit of Work Pattern</h2>
+
+        <h3 id="uow-transaction">Transaction Yönetimi</h3>
+        <p>Unit of Work Pattern, bir business transaction içindeki tüm veritabanı işlemlerini tek bir iş birimi olarak yönetir. ACID prensiplerini uygulayarak veri tutarlılığını garanti eder.</p>
+
+        <h4>Core Prensipleri:</h4>
+        <ul>
+            <li><strong>Atomicity:</strong> Tüm işlemler ya tamamen başarılı olur ya da hiçbiri olmaz</li>
+            <li><strong>Consistency:</strong> Veritabanı her zaman geçerli bir durumda kalır</li>
+            <li><strong>Isolation:</strong> Eş zamanlı işlemler birbirini etkilemez</li>
+            <li><strong>Durability:</strong> Commit edilen değişiklikler kalıcıdır</li>
+        </ul>
+
+        <h3 id="uow-implementation">Implementasyon Detayları</h3>
+        
+        <h4>Temel Sorumluluklar:</h4>
+        <ul>
+            <li>Tüm repository instance'larını merkezi olarak yönetme</li>
+            <li>DbContext lifecycle'ını kontrol etme</li>
+            <li>Transaction başlatma, commit ve rollback işlemleri</li>
+            <li>Change tracking mekanizmasını yönetme</li>
+        </ul>
+
+        <div class="info-box">
+            <strong>SaveChanges Stratejisi:</strong> Unit of Work içinde <code>SaveChanges()</code> sadece bir kez, tüm işlemler tamamlandıktan sonra çağrılır. Bu yaklaşım hem performance açısından optimize edilmiştir hem de transaction bütünlüğünü garanti eder. Her repository işleminden sonra ayrı ayrı save yapmak transaction avantajını ortadan kaldırır.
+        </div>
+
+        <h4>Dispose Pattern Implementasyonu:</h4>
+        <p>Unit of Work, <code>IDisposable</code> interface'ini implement etmelidir. DbContext'in düzgün dispose edilmesi memory leak'leri önler ve connection pool'u verimli kullanır.</p>
+
+        <div class="note-box">
+            <strong>Entity Framework Core ile İlişki:</strong> EF Core'da <code>DbContext</code> zaten Unit of Work pattern'ini implement eder. Ancak birden fazla repository'yi koordine etmek ve business logic'i clean tutmak için explicit Unit of Work implementasyonu tercih edilir. Bu yaklaşım özellikle multiple DbContext senaryolarında kritik öneme sahiptir.
+        </div>
+
+        <h2 id="cqrs">CQRS (Command Query Responsibility Segregation)</h2>
+
+        <h3 id="cqrs-concept">Temel Konsept ve Filozofi</h3>
+        <p>CQRS, Martin Fowler tarafından popülarize edilen bir mimari pattern'dir. Sistemdeki okuma (query) ve yazma (command) operasyonlarını farklı modeller ve işlem akışları ile ayırır.</p>
+
+        <h4>Separation of Concerns Prensibi:</h4>
+        <table class="comparison-table">
+            <tr>
+                <th>Operasyon Tipi</th>
+                <th>Command (Yazma)</th>
+                <th>Query (Okuma)</th>
+            </tr>
+            <tr>
+                <td>Amaç</td>
+                <td>State değişikliği yapmak</td>
+                <td>Data okumak</td>
+            </tr>
+            <tr>
+                <td>Return Type</td>
+                <td>Void veya Result (data döndürmez)</td>
+                <td>DTO, ViewModel vb.</td>
+            </tr>
+            <tr>
+                <td>Validation</td>
+                <td>Karmaşık business rule validation</td>
+                <td>Minimal veya yok</td>
+            </tr>
+            <tr>
+                <td>Caching</td>
+                <td>Kullanılmaz</td>
+                <td>Agresif caching stratejileri</td>
+            </tr>
+            <tr>
+                <td>Transaction</td>
+                <td>Gerekli</td>
+                <td>Genellikle gereksiz</td>
+            </tr>
+        </table>
+
+        <h4>Command Yapısı:</h4>
+        <p>Command'ler business intent'i temsil eder ve şu özelliklere sahiptir:</p>
+        <ul>
+            <li>İmperative naming convention (CreateOrder, UpdateUser, DeleteProduct)</li>
+            <li>Input parametreleri DTO olarak taşır</li>
+            <li>Validation logic içerir</li>
+            <li>Domain event'leri tetikleyebilir</li>
+            <li>Return type genelde void veya Result pattern kullanır</li>
+        </ul>
+
+        <h4>Query Yapısı:</h4>
+        <p>Query'ler veri okuma ihtiyacını karşılar:</p>
+        <ul>
+            <li>Descriptive naming (GetUserById, GetProductList, SearchOrders)</li>
+            <li>Optimized read models kullanır</li>
+            <li>Projection ve DTO mapping içerir</li>
+            <li>Caching layer'ı ile entegre edilebilir</li>
+            <li>Spesifik DTO'lar döndürür</li>
+        </ul>
+
+        <h3 id="cqrs-mediatr">MediatR ile CQRS Implementasyonu</h3>
+        <p>MediatR, CQRS pattern'ini implement etmek için kullanılan in-process messaging kütüphanesidir. Request-Response ve Notification pattern'lerini destekler.</p>
+
+        <h4>IRequest ve IRequestHandler Interface'leri:</h4>
+        <ul>
+            <li><code>IRequest&lt;TResponse&gt;</code>: Command ve Query'leri temsil eder</li>
+            <li><code>IRequestHandler&lt;TRequest, TResponse&gt;</code>: İşleyici logic'i içerir</li>
+            <li><code>INotification</code>: Domain event'leri için kullanılır</li>
+            <li><code>INotificationHandler&lt;TNotification&gt;</code>: Event handler'ları implement eder</li>
+        </ul>
+
+        <div class="success-box">
+            <strong>MediatR Avantajları:</strong>
+            <ul>
+                <li><strong>Loose Coupling:</strong> Controller'lar handler'lara direkt bağımlı değildir</li>
+                <li><strong>Single Responsibility:</strong> Her handler tek bir işten sorumludur</li>
+                <li><strong>Pipeline Behaviors:</strong> Cross-cutting concern'ler merkezi olarak yönetilir</li>
+                <li><strong>Testability:</strong> Unit test yazımı kolaylaşır</li>
+            </ul>
+        </div>
+
+        <h3 id="cqrs-when">Ne Zaman CQRS Kullanılmalı</h3>
+
+        <h4>CQRS Uygun Olduğu Durumlar:</h4>
+        <ul>
+            <li>Okuma ve yazma operasyonlarının farklı performans gereksinimleri olduğunda</li>
+            <li>Karmaşık domain logic ve business rule'lar mevcut olduğunda</li>
+            <li>Farklı takımların read ve write tarafını bağımsız geliştirmesi gerektiğinde</li>
+            <li>Eventual consistency kabul edilebilir olduğunda</li>
+            <li>Event sourcing implementasyonu planlanıyorsa</li>
+        </ul>
+
+        <h4>CQRS Kullanılmaması Gereken Durumlar:</h4>
+        <ul>
+            <li>Basit CRUD operasyonları dominant olduğunda</li>
+            <li>Küçük ölçekli projeler ve prototiplerde</li>
+            <li>Takımın pattern'e hakimiyeti yoksa</li>
+            <li>Over-engineering riski varsa</li>
+        </ul>
+
+        <div class="warning-box">
+            <strong>Kompleksite Uyarısı:</strong> CQRS, uygulama kompleksitesini artırır. Read ve write model'larını senkronize etmek, eventual consistency'yi yönetmek ve ek infrastructure kodları gerektirir. Basit projelerde kullanımı premature optimization olarak değerlendirilir ve teknik borç yaratabilir.
+        </div>
+
+        <h2 id="mediatr">MediatR Pattern Detayları</h2>
+
+        <h3 id="mediatr-concept">Mediator Pattern Kavramı</h3>
+        <p>Mediator pattern, nesneler arasındaki iletişimi merkezi bir mediator üzerinden yöneterek loose coupling sağlar. Gang of Four design patterns'inden biridir.</p>
+
+        <h4>Problem: Tight Coupling</h4>
+        <p>Geleneksel yaklaşımda Controller'lar doğrudan Service layer'a bağımlıdır:</p>
+        <ul>
+            <li>Controller → UserService, ProductService, OrderService...</li>
+            <li>Her service için constructor injection gerekir</li>
+            <li>Service değişikliği controller'ı etkiler</li>
+            <li>Test setup karmaşıklaşır</li>
+        </ul>
+
+        <h4>Çözüm: Mediator</h4>
+        <p>MediatR ile controller sadece IMediator'a bağımlıdır:</p>
+        <ul>
+            <li>Controller → IMediator → Handler</li>
+            <li>Tek bir dependency injection</li>
+            <li>Handler'lar bağımsız olarak test edilebilir</li>
+            <li>Yeni handler eklemek controller'ı etkilemez</li>
+        </ul>
+
+        <h3 id="mediatr-pipeline">Pipeline Behaviors</h3>
+        <p>MediatR'ın en güçlü özelliklerinden biri Pipeline Behavior'lardır. Request-Response akışına middleware ekleyerek cross-cutting concern'leri merkezi olarak yönetir.</p>
+
+        <h4>Yaygın Pipeline Behavior Kullanımları:</h4>
+        <table>
+            <tr>
+                <th>Behavior</th>
+                <th>Amaç</th>
+                <th>Uygulama Alanı</th>
+            </tr>
+            <tr>
+                <td>Validation Behavior</td>
+                <td>FluentValidation ile otomatik validasyon</td>
+                <td>Tüm command'ler</td>
+            </tr>
+            <tr>
+                <td>Logging Behavior</td>
+                <td>Request/Response loglama</td>
+                <td>Tüm request'ler</td>
+            </tr>
+            <tr>
+                <td>Performance Behavior</td>
+                <td>Uzun süren işlemleri tespit etme</td>
+                <td>Kritik operasyonlar</td>
+            </tr>
+            <tr>
+                <td>Transaction Behavior</td>
+                <td>Otomatik transaction yönetimi</td>
+                <td>Command'ler</td>
+            </tr>
+            <tr>
+                <td>Caching Behavior</td>
+                <td>Response caching</td>
+                <td>Query'ler</td>
+            </tr>
+            <tr>
+                <td>Authorization Behavior</td>
+                <td>Yetki kontrolü</td>
+                <td>Güvenlik gerektiren işlemler</td>
+            </tr>
+        </table>
+
+        <div class="info-box">
+            <strong>Pipeline Execution Order:</strong> Behavior'lar registration sırasına göre çalışır. Tipik sıralama: Logging → Validation → Authorization → Transaction → Handler. Bu sıralama değiştirilebilir ancak logical akışı bozmamak önemlidir.
+        </div>
+
+        <h4>Validation Pipeline Örnek Akış:</h4>
+        <ol>
+            <li>Request Controller'a gelir</li>
+            <li>IMediator.Send() çağrılır</li>
+            <li>ValidationBehavior devreye girer</li>
+            <li>FluentValidation rules çalışır</li>
+            <li>Validation başarısızsa ValidationException fırlatılır</li>
+            <li>Başarılıysa Handler'a iletilir</li>
+            <li>Handler response döner</li>
+            <li>Response Controller'a geri döner</li>
+        </ol>
+
+        <h2 id="response-pattern">Response Pattern (API Standardization)</h2>
+
+        <h3>Problem: Tutarsız API Response'ları</h3>
+        <p>Farklı endpoint'lerin farklı response formatları döndürmesi şu problemleri yaratır:</p>
+        <ul>
+            <li>Frontend'de her endpoint için farklı error handling</li>
+            <li>Kullanıcıya gösterilecek mesajların tutarsız formatları</li>
+            <li>HTTP status code'larının yanlış kullanımı</li>
+            <li>API dokümantasyonunun karmaşıklaşması</li>
+        </ul>
+
+        <h3>Standart Response Yapısı</h3>
+        <p>Response Pattern, tüm API endpoint'leri için tutarlı bir yanıt yapısı tanımlar:</p>
+
+        <table>
+            <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Açıklama</th>
+            </tr>
+            <tr>
+                <td>success</td>
+                <td>bool</td>
+                <td>İşlem başarı durumu</td>
+            </tr>
+            <tr>
+                <td>message</td>
+                <td>string</td>
+                <td>Kullanıcıya gösterilecek mesaj</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>T (generic)</td>
+                <td>Response payload</td>
+            </tr>
+            <tr>
+                <td>errors</td>
+                <td>List&lt;string&gt;</td>
+                <td>Validasyon hataları</td>
+            </tr>
+            <tr>
+                <td>statusCode</td>
+                <td>int</td>
+                <td>HTTP status code</td>
+            </tr>
+            <tr>
+                <td>timestamp</td>
+                <td>DateTime</td>
+                <td>Response zamanı</td>
+            </tr>
+        </table>
+
+        <div class="info-box">
+            <strong>Generic Response Types:</strong> İki temel response type kullanılır:
+            <ul>
+                <li><code>ApiResponse</code>: Data içermeyen response'lar için (örn: Delete işlemi)</li>
+                <li><code>ApiResponse&lt;T&gt;</code>: Generic data içeren response'lar için</li>
+            </ul>
+        </div>
+
+        <h3>HTTP Status Code Best Practices</h3>
+        <table>
+            <tr>
+                <th>Status Code</th>
+                <th>Kullanım</th>
+                <th>Örnek Senaryo</th>
+            </tr>
+            <tr>
+                <td>200 OK</td>
+                <td>Başarılı GET, PUT işlemleri</td>
+                <td>Kullanıcı detayı getirildi</td>
+            </tr>
+            <tr>
+                <td>201 Created</td>
+                <td>Başarılı POST işlemi</td>
+                <td>Yeni ürün oluşturuldu</td>
+            </tr>
+            <tr>
+                <td>204 No Content</td>
+                <td>Başarılı DELETE işlemi</td>
+                <td>Kayıt silindi</td>
+            </tr>
+            <tr>
+                <td>400 Bad Request</td>
+                <td>Validation hataları</td>
+                <td>Email formatı geçersiz</td>
+            </tr>
+            <tr>
+                <td>401 Unauthorized</td>
+                <td>Authentication gerekli</td>
+                <td>Token eksik veya geçersiz</td>
+            </tr>
+            <tr>
+                <td>403 Forbid
+
+  
+</body>
+</html>
