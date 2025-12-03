@@ -985,6 +985,62 @@ public class Result<T>
             <li><strong>Hubs:</strong> Client ve Server arasındaki bağlantı noktasıdır.</li>
             <li><strong>Scale-out (Redis Backplane):</strong> Birden fazla sunucu olduğunda, socket bağlantılarını senkronize etmek için Redis kullanılır.</li>
         </ul>
+    <!-- Asynchronous Communication -->
+        <h2 id="message-brokers">Message Brokers & Event Bus (Kafka / RabbitMQ)</h2>
+        <p>Microservice'lerin birbirine bağımlı olmadan haberleşmesi (Decoupling) için araya bir mesaj kuyruk sistemi konur. .NET dünyasında bu iş genellikle <strong>MassTransit</strong> kütüphanesi ile soyutlanır.</p>
+
+        <table class="comparison-table">
+            <tr>
+                <th>Teknoloji</th>
+                <th>Tip</th>
+                <th>En İyi Kullanım Alanı</th>
+            </tr>
+            <tr>
+                <td><strong>RabbitMQ</strong></td>
+                <td>Queue (Kuyruk)</td>
+                <td>"Fire and Forget" işler. Sipariş alındı maili, basit event'ler. Mesaj okunduktan sonra silinir.</td>
+            </tr>
+            <tr>
+                <td><strong>Apache Kafka</strong></td>
+                <td>Stream (Akış)</td>
+                <td>Büyük veri akışı, Log toplama, Event Sourcing. Mesajlar silinmez, geriye dönük (Replay) okunabilir.</td>
+            </tr>
+            <tr>
+                <td><strong>Azure Service Bus</strong></td>
+                <td>Enterprise Cloud Queue</td>
+                <td>Azure üzerinde çalışan kurumsal sistemler.</td>
+            </tr>
+        </table>
+
+        <div class="info-box">
+            <strong>MassTransit / Rebus:</strong> .NET projesinde doğrudan RabbitMQ sürücüsü kullanılmaz. Arada <strong>MassTransit</strong> kullanılır. Bu sayede kodunuzu değiştirmeden yarın RabbitMQ'dan Azure Service Bus'a geçebilirsiniz. Ayrıca "Retry", "Circuit Breaker" ve "Saga" yönetimini otomatik yapar.
+        </div>
+
+        <h4>Kritik Kavramlar:</h4>
+        <ul>
+            <li><strong>Dead Letter Queue (DLQ):</strong> İşlenemeyen hatalı mesajların biriktiği "çöp/karantina" kuyruğu.</li>
+            <li><strong>Consumer Groups (Kafka):</strong> Aynı mesajın birden fazla farklı servis tarafından (biri loglarken diğeri mail atsın) okunabilmesi.</li>
+            <li><strong>Idempotency:</strong> Bir mesaj yanlışlıkla iki kere gelirse, sistemin bozulmaması (Örn: Çift ödeme çekilmemesi).</li>
+        </ul>
+
+        <!-- Operational Architecture -->
+        <h2 id="operational">Operational Patterns</h2>
+
+        <h3 id="healthchecks">Health Checks</h3>
+        <p>Uygulamanın ayakta olması (Liveness) düzgün çalıştığı anlamına gelmez (Readiness). Kubernetes veya Load Balancer'ın trafiği kesmesi gerekebilir.</p>
+        <ul>
+            <li><strong>Liveness Probe:</strong> Uygulama açık mı? (Çökmediyse trafiği gönder).</li>
+            <li><strong>Readiness Probe:</strong> Veritabanına ve Redis'e erişebiliyor mu? (Erişemiyorsa trafiği kes, ama restart etme).</li>
+            <li><strong>UI:</strong> <code>HealthChecks.UI</code> kütüphanesi ile tüm servislerin sağlık durumu görselleştirilir.</li>
+        </ul>
+
+        <h3 id="featureflags">Feature Flags (Özellik Bayrakları)</h3>
+        <p>Yeni bir özelliği canlıya alırken kod deploy etmek yerine, konfigürasyon ile özelliği açıp kapatma yöntemidir.</p>
+        <ul>
+            <li><strong>Trunk Based Development:</strong> Geliştiriciler ana branch'e kod atar ama özellik kapalıdır.</li>
+            <li><strong>A/B Testing:</strong> Özelliği kullanıcıların sadece %10'una açıp test etme.</li>
+            <li><strong>Kütüphane:</strong> <code>Microsoft.FeatureManagement</code>.</li>
+        </ul>
 
         <div class="success-box">
             <strong>SONUÇ VE YOL HARİTASI:</strong>
