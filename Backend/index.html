@@ -1,3 +1,270 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.NET Core Enterprise Patterns Dokümantasyonu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+code
+Code
+body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.8;
+        color: #e0e0e0;
+        background: #0d1117;
+    }
+    
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 280px;
+        height: 100vh;
+        background: #161b22;
+        border-right: 1px solid #30363d;
+        overflow-y: auto;
+        padding: 20px;
+    }
+    
+    .sidebar h2 {
+        color: #58a6ff;
+        font-size: 18px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #30363d;
+    }
+    
+    .sidebar ul {
+        list-style: none;
+    }
+    
+    .sidebar li {
+        margin-bottom: 8px;
+    }
+    
+    .sidebar a {
+        color: #8b949e;
+        text-decoration: none;
+        display: block;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: all 0.2s;
+        font-size: 14px;
+    }
+    
+    .sidebar a:hover {
+        background: #21262d;
+        color: #58a6ff;
+    }
+    
+    .sidebar .sub-menu {
+        margin-left: 15px;
+        margin-top: 5px;
+    }
+    
+    .sidebar .sub-menu a {
+        font-size: 13px;
+        color: #6e7681;
+    }
+    
+    .container {
+        margin-left: 280px;
+        padding: 40px 60px;
+        max-width: 1400px;
+    }
+    
+    h1 {
+        color: #f0f6fc;
+        font-size: 36px;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #30363d;
+    }
+    
+    h2 {
+        color: #58a6ff;
+        font-size: 28px;
+        margin-top: 50px;
+        margin-bottom: 20px;
+        padding-top: 20px;
+    }
+    
+    h3 {
+        color: #79c0ff;
+        font-size: 22px;
+        margin-top: 30px;
+        margin-bottom: 15px;
+    }
+    
+    h4 {
+        color: #a5d6ff;
+        font-size: 18px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    
+    p {
+        margin-bottom: 15px;
+        color: #c9d1d9;
+    }
+    
+    .info-box {
+        background: #161b22;
+        border-left: 4px solid #58a6ff;
+        padding: 20px;
+        margin: 25px 0;
+        border-radius: 6px;
+    }
+    
+    .warning-box {
+        background: #1c1917;
+        border-left: 4px solid #f85149;
+        padding: 20px;
+        margin: 25px 0;
+        border-radius: 6px;
+    }
+    
+    .success-box {
+        background: #0d1b13;
+        border-left: 4px solid #3fb950;
+        padding: 20px;
+        margin: 25px 0;
+        border-radius: 6px;
+    }
+    
+    .note-box {
+        background: #1c1810;
+        border-left: 4px solid #d29922;
+        padding: 20px;
+        margin: 25px 0;
+        border-radius: 6px;
+    }
+    
+    code {
+        background: #161b22;
+        color: #79c0ff;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-family: 'Consolas', 'Monaco', monospace;
+        font-size: 14px;
+    }
+    
+    ul, ol {
+        margin: 15px 0 15px 30px;
+    }
+    
+    li {
+        margin-bottom: 10px;
+        color: #c9d1d9;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 25px 0;
+        background: #161b22;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    
+    th {
+        background: #21262d;
+        color: #58a6ff;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+    }
+    
+    td {
+        padding: 12px;
+        border-top: 1px solid #30363d;
+        color: #c9d1d9;
+    }
+    
+    tr:hover {
+        background: #0d1117;
+    }
+
+    .comparison-table td:first-child {
+        font-weight: 600;
+        color: #79c0ff;
+    }
+
+    strong {
+        color: #f0f6fc;
+    }
+
+    .highlight {
+        background: #1f2937;
+        color: #fbbf24;
+        padding: 2px 6px;
+        border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #0d1117;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #30363d;
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #484f58;
+    }
+</style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>İçindekiler</h2>
+        <ul>
+            <li><a href="#generic-repo">Generic Repository Pattern</a>
+                <ul class="sub-menu">
+                    <li><a href="#generic-repo-problem">Problem Analizi</a></li>
+                    <li><a href="#generic-repo-solution">Çözüm Yapısı</a></li>
+                    <li><a href="#generic-repo-when">Kullanım Senaryoları</a></li>
+                </ul>
+            </li>
+            <li><a href="#unit-of-work">Unit of Work Pattern</a>
+                <ul class="sub-menu">
+                    <li><a href="#uow-transaction">Transaction Yönetimi</a></li>
+                    <li><a href="#uow-implementation">Implementasyon</a></li>
+                </ul>
+            </li>
+            <li><a href="#cqrs">CQRS Pattern</a>
+                <ul class="sub-menu">
+                    <li><a href="#cqrs-concept">Temel Konsept</a></li>
+                    <li><a href="#cqrs-mediatr">MediatR Entegrasyonu</a></li>
+                    <li><a href="#cqrs-when">Ne Zaman Kullanılır</a></li>
+                </ul>
+            </li>
+            <li><a href="#mediatr">MediatR Pattern</a>
+                <ul class="sub-menu">
+                    <li><a href="#mediatr-concept">Mediator Kavramı</a></li>
+                    <li><a href="#mediatr-pipeline">Pipeline Behaviors</a></li>
+                </ul>
+            </li>
+            <li><a href="#response-pattern">Response Pattern</a></li>
+            <li><a href="#result-pattern">Result Pattern</a></li>
+            <li><a href="#multi-db">Multiple Database Kullanımı</a>
+                <ul class="sub-menu">
+                    <li><a href="#multi-db-same">Aynı Tip DB</a></li>
+                    <li><a href="#multi-db-different">Farklı Tip DB</a></li>
+                </ul>
+            </li>
+            <li><a href="#advanced">İleri Seviye Konular</a></li>
+        </ul>
+    </div>
 <div class="container">
     <h1>.NET Core Enterprise Patterns ve Mimari Yapılar</h1>
     
