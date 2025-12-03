@@ -263,6 +263,32 @@ body {
                 </ul>
             </li>
             <li><a href="#advanced">İleri Seviye Konular</a></li>
+            <li><a href="#caching">Caching Strategy</a></li>
+            <li><a href="#ddd">Domain-Driven Design (DDD)</a></li>
+            <li><a href="#distributed-patterns">Distributed Patterns</a>
+                <ul class="sub-menu">
+                    <li><a href="#outbox">Outbox Pattern</a></li>
+                    <li><a href="#saga">Saga Pattern</a></li>
+                    <li><a href="#event-sourcing">Event Sourcing</a></li>
+                </ul>
+            </li>
+            <li><a href="#observability">Observability & Logging</a>
+                <ul class="sub-menu">
+                    <li><a href="#logging">Structured Logging</a></li>
+                    <li><a href="#opentelemetry">OpenTelemetry</a></li>
+                </ul>
+            </li>
+            <li><a href="#security">Security Hardening</a></li>
+            <li><a href="#api-standards">API Standartları</a>
+                <ul class="sub-menu">
+                    <li><a href="#pagination">Pagination & Filtering</a></li>
+                    <li><a href="#global-exception">Global Exception</a></li>
+                    <li><a href="#versioning">Versioning</a></li>
+                </ul>
+            </li>
+            <li><a href="#background-jobs">Background Jobs</a></li>
+            <li><a href="#audit-soft-delete">Audit & Soft Delete</a></li>
+            <li><a href="#configuration">Configuration & Options</a></li>
         </ul>
     </div>
 <div class="container">
@@ -740,7 +766,163 @@ public class Result<T>
 
         <h3>3. Background Services (Hosted Services)</h3>
         <p>Uygulama ayağa kalktığında veya belirli periyotlarda çalışması gereken işler için kullanılır (Email kuyruğu eritme, Cache yenileme vb.).</p>
+        <!-- Caching Section -->
+        <h2 id="caching">Caching System (Redis / Distributed Cache)</h2>
+        <p>Enterprise uygulamalarda veritabanı yükünü azaltmak ve yanıt sürelerini milisaniye seviyesine çekmek için çok katmanlı caching stratejisi uygulanır.</p>
+
+        <h3>Caching Stratejileri</h3>
+        <table class="comparison-table">
+            <tr>
+                <th>Tip</th>
+                <th>Teknoloji</th>
+                <th>Kullanım Alanı</th>
+            </tr>
+            <tr>
+                <td>In-Memory Cache</td>
+                <td>IMemoryCache</td>
+                <td>Tek instance'lı uygulamalar, referans veriler (Ülke, Şehir listesi).</td>
+            </tr>
+            <tr>
+                <td>Distributed Cache</td>
+                <td>Redis / Memcached</td>
+                <td>Microservices, çoklu instance çalışan API'ler, Session yönetimi.</td>
+            </tr>
+            <tr>
+                <td>Response Caching</td>
+                <td>Middleware</td>
+                <td>HTTP Response header'larına göre tarayıcı veya CDN tarafında önbellekleme.</td>
+            </tr>
+        </table>
+
+        <h4>Cache Stampede ve Locking</h4>
+        <p>Aynı anda binlerce istek geldiğinde cache süresi dolmuşsa, tüm isteklerin DB'ye saldırmasını (Thundering Herd) önlemek için <strong>Distributed Lock</strong> mekanizması kullanılmalıdır.</p>
         
+        <div class="warning-box">
+            <strong>Kritik:</strong> Cache invalidation (önbellek temizleme), caching'in en zor kısmıdır. Veri güncellendiğinde (Command), ilgili cache anahtarının silinmesi veya güncellenmesi gerekir. Bu genellikle <strong>Decorator Pattern</strong> veya <strong>Pipeline Behavior</strong> ile otomatikleştirilir.
+        </div>
+
+        <!-- DDD Section -->
+        <h2 id="ddd">Domain-Driven Design (DDD)</h2>
+        <p>Karmaşık iş kurallarını yönetmek için yazılımı iş alanına (domain) göre modelleme yaklaşımıdır. CQRS ile birlikte kullanıldığında en yüksek verimi sağlar.</p>
+
+        <ul>
+            <li><strong>Aggregate Root:</strong> Bir işlem bütünlüğünü sağlayan ana varlık (örn: Order). OrderItem'lar Order olmadan var olamaz, tüm işlemler Order üzerinden yapılır.</li>
+            <li><strong>Value Objects:</strong> Kimliği (ID) olmayan, değerleriyle tanımlanan nesneler (örn: Adres, Para Birimi). Immutable (değiştirilemez) olmalıdırlar.</li>
+            <li><strong>Domain Events:</strong> Domain içinde gerçekleşen önemli olaylar (örn: OrderCompleted, PaymentFailed). Yan etkileri (Side effects) tetiklemek için kullanılır.</li>
+            <li><strong>Anti-corruption Layer (ACL):</strong> Dış servislerden gelen kirli modellerin, kendi temiz domain modelimize dönüştürüldüğü katmandır.</li>
+        </ul>
+
+        <!-- Distributed Patterns -->
+        <h2 id="distributed-patterns">Distributed Patterns</h2>
+
+        <h3 id="outbox">Outbox Pattern</h3>
+        <p>Microservices mimarisinde "Dual Write" problemini (Veritabanına yazıp RabbitMQ'ya yazamama durumu) çözer.</p>
+        
+        <div class="success-box">
+            <strong>Çalışma Mantığı:</strong>
+            <ol>
+                <li>Veritabanı transaction'ı başlar.</li>
+                <li>Business işlemi (Sipariş) DB'ye yazılır.</li>
+                <li>Atılacak event (OrderCreated) aynı transaction içinde "Outbox" tablosuna kaydedilir.</li>
+                <li>Transaction commit edilir (Atomicity garanti edilir).</li>
+                <li>Arka plandaki bir "Message Relay" servisi, Outbox tablosunu okuyup event'i Message Broker'a (RabbitMQ/Kafka) atar.</li>
+            </ol>
+        </div>
+
+        <h3 id="saga">Saga Pattern</h3>
+        <p>Dağıtık sistemlerde transaction yönetimi (ACID) mümkün olmadığı için kullanılır. Uzun süren iş süreçlerini yönetir.</p>
+        <ul>
+            <li><strong>Choreography:</strong> Servisler birbirini event'ler ile tetikler. Merkezi yönetici yoktur.</li>
+            <li><strong>Orchestration:</strong> Merkezi bir "Process Manager" (Orchestrator) tüm adımları yönetir.</li>
+            <li><strong>Compensation:</strong> Bir adım hata aldığında, önceki adımları geri alacak ters işlemler (Undo logic) çalıştırılır.</li>
+        </ul>
+
+        <h3 id="event-sourcing">Event Sourcing</h3>
+        <p>Sistemin o anki durumunu saklamak yerine, duruma gelene kadar gerçekleşen tüm olayları (Event) saklama yöntemidir. Veritabanı sadece son durumu tutmaz, tüm tarihçeyi tutar (Ledger mantığı).</p>
+
+        <!-- Observability -->
+        <h2 id="observability">Observability & Logging</h2>
+
+        <h3 id="logging">Structured Logging (Serilog)</h3>
+        <p>Logları metin dosyası yerine JSON formatında, sorgulanabilir (structured) şekilde tutmaktır. ElasticSearch veya Seq üzerinde "UserId = 5 olan hataları getir" gibi sorgular atılabilir.</p>
+
+        <h3 id="opentelemetry">OpenTelemetry & Tracing</h3>
+        <p>Microservices dünyasında bir isteğin hangi servislerden geçtiğini takip etmek için kullanılır.</p>
+        <ul>
+            <li><strong>TraceId:</strong> Tüm akış boyunca değişmeyen tekil ID.</li>
+            <li><strong>SpanId:</strong> Her servisin veya işlemin kendi ID'si.</li>
+            <li><strong>CorrelationId Propagation:</strong> Request header'ları üzerinden ID'lerin servisler arası taşınması.</li>
+        </ul>
+
+        <!-- Security -->
+        <h2 id="security">Security Hardening</h2>
+        <p>Enterprise uygulamalarda güvenlik sonradan eklenen bir özellik değil, tasarımın parçasıdır.</p>
+
+        <table class="comparison-table">
+            <tr>
+                <th>Önlem</th>
+                <th>Açıklama</th>
+            </tr>
+            <tr>
+                <td>Rate Limiting</td>
+                <td>Belirli bir IP veya kullanıcıdan gelen istek sayısını sınırlama (DoS koruması). .NET 7+ ile built-in gelir.</td>
+            </tr>
+            <tr>
+                <td>Secret Management</td>
+                <td>Şifrelerin kod içinde değil, Vault veya KeyVault gibi güvenli kasalarda tutulması.</td>
+            </tr>
+            <tr>
+                <td>OWASP Top 10</td>
+                <td>SQL Injection, XSS gibi bilinen zafiyetlere karşı middleware korumaları.</td>
+            </tr>
+        </table>
+
+        <!-- API Standards -->
+        <h2 id="api-standards">API Standartları</h2>
+
+        <h3 id="pagination">Pagination, Filtering & Sorting</h3>
+        <p>Tüm liste dönen endpoint'ler standart bir yapı kullanmalıdır. Örnek bir <code>PagedResult&lt;T&gt;</code> yapısı:</p>
+        <pre><code>
+{
+  "pageIndex": 1,
+  "pageSize": 10,
+  "totalCount": 500,
+  "totalPages": 50,
+  "hasPreviousPage": false,
+  "hasNextPage": true,
+  "items": [ ... ]
+}
+        </code></pre>
+
+        <h3 id="global-exception">Global Exception Handling</h3>
+        <p>Try-catch bloklarını kodun içine yaymak yerine, merkezi bir Middleware ile hatalar yakalanır. Hata dönüşleri <strong>RFC 7807 ProblemDetails</strong> standardına uygun olmalıdır.</p>
+
+        <h3 id="versioning">API Versioning</h3>
+        <p>Mevcut client'ları bozmadan değişiklik yapmak için API versiyonlanmalıdır. Önerilen yöntem URL Versioning (<code>/api/v1/products</code>) veya Header Versioning'dir.</p>
+
+        <!-- Additional Enterprise Features -->
+        <h2 id="audit-soft-delete">Audit Trail & Soft Delete</h2>
+        
+        <div class="info-box">
+            <strong>Soft Delete:</strong> Veritabanından fiziksel silme (DELETE) yapılmaz. <code>IsDeleted = true</code> olarak işaretlenir. EF Core <strong>Global Query Filters</strong> ile silinmiş kayıtlar otomatik olarak sorgulardan filtrelenir.
+        </div>
+        
+        <p><strong>Audit Log:</strong> Veri üzerinde kimin, ne zaman, hangi değişikliği (Eski Değer -> Yeni Değer) yaptığının loglanmasıdır. Genellikle `SaveChanges` override edilerek ChangeTracker üzerinden yapılır.</p>
+
+        <h2 id="background-jobs">Background Jobs & Scheduling</h2>
+        <p>Uzun süren işlemler (Rapor alma, Email gönderme) HTTP request ömrü içinde yapılmaz. </p>
+        <ul>
+            <li><strong>Hosted Services:</strong> Basit, periyodik işler için (Cron Jobs).</li>
+            <li><strong>Hangfire / Quartz:</strong> Retry mekanizması, Dashboard yönetimi ve Persistent job gerektiren durumlar için.</li>
+        </ul>
+
+        <h2 id="configuration">Configuration Management</h2>
+        <p>Konfigürasyonlar (appsettings.json) string olarak okunmamalı, <strong>Options Pattern</strong> ile class'lara map edilmelidir.</p>
+        <ul>
+            <li><code>IOptions&lt;T&gt;</code>: Singleton, uygulama başlarken okunur.</li>
+            <li><code>IOptionsSnapshot&lt;T&gt;</code>: Scoped, her request'te tekrar okunur.</li>
+            <li><code>IOptionsMonitor&lt;T&gt;</code>: Singleton, dosya değiştiğinde otomatik güncellenir (Hot reload).</li>
+        </ul>
         <div class="success-box">
             <strong>Sonuç:</strong> Bu dokümantasyonda ele alınan pattern'ler, .NET Core ile geliştirilen Enterprise uygulamaların omurgasını oluşturur. Her pattern bir soruna çözüm üretirken, yanlış kullanımı yeni sorunlara yol açabilir. Proje ölçeğine göre doğru aracı seçmek mimarın en önemli görevidir.
         </div>
