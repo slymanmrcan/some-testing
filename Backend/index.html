@@ -923,6 +923,74 @@ public class Result<T>
             <li><code>IOptionsSnapshot&lt;T&gt;</code>: Scoped, her request'te tekrar okunur.</li>
             <li><code>IOptionsMonitor&lt;T&gt;</code>: Singleton, dosya değiştiğinde otomatik güncellenir (Hot reload).</li>
         </ul>
+    <!-- Resilience Section -->
+        <h2 id="resilience">Resiliency & Fault Tolerance (Polly)</h2>
+        <p>Dağıtık sistemlerde "Ağ her zaman güvenilirdir" veya "Diğer servis her zaman ayaktadır" varsayımları yanlıştır. Hataları yönetmek için <strong>Polly</strong> kütüphanesi kullanılır.</p>
+
+        <table class="comparison-table">
+            <tr>
+                <th>Politika</th>
+                <th>Ne İşe Yarar?</th>
+                <th>Örnek Senaryo</th>
+            </tr>
+            <tr>
+                <td>Retry</td>
+                <td>Hata alan işlemi belirli aralıklarla tekrar dener (Exponential Backoff).</td>
+                <td>Anlık ağ kopması (Transient errors).</td>
+            </tr>
+            <tr>
+                <td>Circuit Breaker</td>
+                <td>Bir servis sürekli hata veriyorsa, sistemi yormamak için akımı keser (Sigorta atması).</td>
+                <td>Veritabanı çöktüğünde sürekli istek atmayı durdurmak.</td>
+            </tr>
+            <tr>
+                <td>Bulkhead</td>
+                <td>Kaynakları izole eder. Bir modüldeki yavaşlık diğerlerini etkilemez.</td>
+                <td>Raporlama servisi şiştiğinde Sipariş servisinin etkilenmemesi.</td>
+            </tr>
+            <tr>
+                <td>Fallback</td>
+                <td>Hata durumunda varsayılan bir değer veya alternatif bir yol sunar.</td>
+                <td>Öneri servisi çalışmıyorsa "En çok satanları" göster.</td>
+            </tr>
+        </table>
+
+        <!-- Testing Section -->
+        <h2 id="testing">Advanced Testing Strategies</h2>
+        <p>Enterprise projelerde test piramidi doğru kurulmalıdır. Sadece "Business Logic" değil, "Integration" da test edilmelidir.</p>
+
+        <ul>
+            <li><strong>Unit Tests (xUnit / NUnit):</strong> Class bazlı, dış bağımlılıkların (Mock) izole edildiği testler.</li>
+            <li><strong>Integration Tests:</strong> Veritabanı ve API'nin birlikte test edilmesi.</li>
+            <li><strong>Testcontainers:</strong> Integration testleri için Docker üzerinde gerçek (geçici) veritabanı ayağa kaldırıp test bitince yok eden kütüphane. <em>(In-Memory DB yerine önerilir).</em></li>
+            <li><strong>Architecture Tests (NetArchTest):</strong> Mimari kuralların bozulmadığını test eder (Örn: "Domain katmanı Infrastructure'ı referans alamaz").</li>
+        </ul>
+
+        <!-- High Performance Communication -->
+        <h2 id="grpc">High Performance: gRPC vs REST</h2>
+        <p>Internal (Microservice-to-Microservice) iletişimde JSON serileştirme maliyeti yüksektir. Yüksek performans için gRPC tercih edilir.</p>
+
+        <div class="info-box">
+            <strong>Neden gRPC?</strong>
+            <ul>
+                <li><strong>Protocol Buffers (Protobuf):</strong> Binary format kullanır, JSON'dan 5-10 kat daha küçük ve hızlıdır.</li>
+                <li><strong>Strict Contract:</strong> <code>.proto</code> dosyaları sayesinde tip güvenliği %100 garanti edilir.</li>
+                <li><strong>Streaming:</strong> Çift yönlü (Bi-directional) veri akışını destekler.</li>
+            </ul>
+        </div>
+
+        <h2 id="realtime">Real-Time Communication (SignalR)</h2>
+        <p>Kullanıcıya anlık bildirim (Notification) gitmesi veya canlı dashboard güncellemeleri için HTTP Polling yerine <strong>WebSocket</strong> tabanlı SignalR kullanılır.</p>
+        <ul>
+            <li><strong>Hubs:</strong> Client ve Server arasındaki bağlantı noktasıdır.</li>
+            <li><strong>Scale-out (Redis Backplane):</strong> Birden fazla sunucu olduğunda, socket bağlantılarını senkronize etmek için Redis kullanılır.</li>
+        </ul>
+
+        <div class="success-box">
+            <strong>SONUÇ VE YOL HARİTASI:</strong>
+            <p>Bu dokümandaki pattern'lerin tamamını bir projede aynı anda kullanmak "Over-Engineering" olabilir. Mimarın görevi, proje gereksinimlerine göre bu araç çantasından (Toolbox) doğru olanları seçmektir.</p>
+            <p>Önerilen öğrenme sırası: <strong>Generic Repo -> UoW -> Caching -> Background Jobs -> CQRS -> Docker -> Distributed Patterns.</strong></p>
+        </div>
         <div class="success-box">
             <strong>Sonuç:</strong> Bu dokümantasyonda ele alınan pattern'ler, .NET Core ile geliştirilen Enterprise uygulamaların omurgasını oluşturur. Her pattern bir soruna çözüm üretirken, yanlış kullanımı yeni sorunlara yol açabilir. Proje ölçeğine göre doğru aracı seçmek mimarın en önemli görevidir.
         </div>
