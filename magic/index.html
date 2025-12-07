@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harry Potter Büyü Simülatörü</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        h1 {
+            color: #f4d03f;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 2px;
+        }
+
+        .wand-container {
+            margin: 40px 0;
+        }
+
+        .wand {
+            width: 300px;
+            height: 15px;
+            background: linear-gradient(90deg, #8b4513 0%, #d2691e 50%, #8b4513 100%);
+            border-radius: 10px;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .wand:hover {
+            transform: scale(1.05);
+        }
+
+        .wand::after {
+            content: '✨';
+            position: absolute;
+            right: -30px;
+            top: -5px;
+            font-size: 24px;
+        }
+
+        .spell-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .spell-btn {
+            background: linear-gradient(135deg, #5a189a 0%, #9d4edd 100%);
+            color: white;
+            border: 2px solid #f4d03f;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            font-family: 'Georgia', serif;
+            font-weight: bold;
+        }
+
+        .spell-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(244, 208, 63, 0.4);
+            background: linear-gradient(135deg, #7209b7 0%, #b185db 100%);
+        }
+
+        .spell-btn:active {
+            transform: translateY(0);
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .lumos-active {
+            animation: glow 0.5s ease-in-out;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+        }
+
+        @keyframes glow {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .dementor {
+            position: fixed;
+            width: 180px;
+            height: 250px;
+            background: linear-gradient(180deg, rgba(20, 20, 20, 0.95) 0%, rgba(0, 0, 0, 0.7) 100%);
+            border-radius: 50% 50% 0 0;
+            animation: float 4s ease-in-out infinite, sway 3s ease-in-out infinite;
+            z-index: 1;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
+        }
+
+        .dementor::before {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 80px;
+            background: rgba(30, 30, 30, 0.95);
+            border-radius: 50%;
+            top: 40px;
+            left: 60px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .dementor::after {
+            content: '💀';
+            position: absolute;
+            font-size: 100px;
+            top: 30px;
+            left: 40px;
+            filter: grayscale(100%) brightness(0.2);
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .patronus {
+            position: fixed;
+            font-size: 80px;
+            z-index: 15;
+            animation: patronusMove 3s ease-out forwards;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+        }
+
+        @keyframes patronusMove {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8) translateY(-200px);
+            }
+        }
+
+        .fireball {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ff6b00 0%, #ff0000 100%);
+            box-shadow: 0 0 20px #ff6b00;
+            z-index: 15;
+        }
+
+        .info {
+            color: #f4d03f;
+            margin-top: 30px;
+            font-size: 1.1em;
+            font-style: italic;
+        }
+
+        .snitch {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #ffd700 0%, #ffed4e 100%);
+            border-radius: 50%;
+            z-index: 20;
+            cursor: pointer;
+            animation: snitch-fly 3s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+
+        .snitch::before {
+            content: '✨';
+            position: absolute;
+            top: -5px;
+            left: -20px;
+            font-size: 20px;
+        }
+
+        .snitch::after {
+            content: '✨';
+            position: absolute;
+            top: -5px;
+            right: -20px;
+            font-size: 20px;
+        }
+
+        @keyframes snitch-fly {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-30px) rotate(90deg); }
+            50% { transform: translateY(0) rotate(180deg); }
+            75% { transform: translateY(-30px) rotate(270deg); }
+        }
+
+        .broom {
+            position: fixed;
+            font-size: 50px;
+            z-index: 15;
+            transition: all 0.3s;
+        }
+
+        .floating-object {
+            position: fixed;
+            font-size: 40px;
+            z-index: 15;
+            animation: levitate 2s ease-in-out infinite;
+        }
+
+        @keyframes levitate {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-30px) rotate(5deg); }
+        }
+
+        .score {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(116, 0, 0, 0.8);
+            color: #f4d03f;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border: 2px solid #f4d03f;
+            z-index: 100;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div class="score" id="score">Yakalanan Snitch: 0 🏆</div>
+    
+    <div class="container">
+        <h1>⚡ Harry Potter Büyü Simülatörü ⚡</h1>
+        
+        <div class="wand-container">
+            <div class="wand" id="wand"></div>
+        </div>
+
+        <div class="spell-buttons">
+            <button class="spell-btn" onclick="castLumos()">✨ Lumos!</button>
+            <button class="spell-btn" onclick="castExpectoPatronum()">🦌 Expecto Patronum!</button>
+            <button class="spell-btn" onclick="castIncendio()">🔥 Incendio!</button>
+            <button class="spell-btn" onclick="summonDementor()">👻 Ruh Emici Çağır</button>
+            <button class="spell-btn" onclick="startQuidditch()">🧹 Quidditch Oyna!</button>
+            <button class="spell-btn" onclick="castWingardium()">🪶 Wingardium Leviosa!</button>
+        </div>
+
+        <div class="info">
+            <p>✨ Büyüleri asa ile yapmak için tuşlara bas!</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        let dementors = [];
+        let snitchCount = 0;
+        let quidditchActive = false;
+        let broom = null;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        function castLumos() {
+            document.body.style.background = '#ffffff';
+            document.body.style.transition = 'background 0.5s';
+            
+            for (let i = 0; i < 50; i++) {
+                particles.push({
+                    x: window.innerWidth / 2,
+                    y: window.innerHeight / 2,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    life: 100,
+                    color: `rgba(255, 255, ${Math.random() * 100 + 155}, ${Math.random()})`
+                });
+            }
+
+            setTimeout(() => {
+                document.body.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
+            }, 1000);
+        }
+
+        function castExpectoPatronum() {
+            const patronus = document.createElement('div');
+            patronus.className = 'patronus';
+            patronus.textContent = '🦌';
+            patronus.style.left = window.innerWidth / 2 - 40 + 'px';
+            patronus.style.top = window.innerHeight / 2 + 'px';
+            document.body.appendChild(patronus);
+
+            dementors.forEach(dementor => {
+                dementor.element.style.transition = 'opacity 1s, transform 1s';
+                dementor.element.style.opacity = '0';
+                dementor.element.style.transform = 'scale(0)';
+                setTimeout(() => dementor.element.remove(), 1000);
+            });
+            dementors = [];
+
+            setTimeout(() => patronus.remove(), 3000);
+        }
+
+        function castIncendio() {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const fireball = document.createElement('div');
+                    fireball.className = 'fireball';
+                    fireball.style.left = window.innerWidth / 2 + 'px';
+                    fireball.style.top = window.innerHeight / 2 + 'px';
+                    document.body.appendChild(fireball);
+
+                    const angle = (Math.random() * Math.PI * 2);
+                    const distance = 300;
+                    const targetX = window.innerWidth / 2 + Math.cos(angle) * distance;
+                    const targetY = window.innerHeight / 2 + Math.sin(angle) * distance;
+
+                    fireball.animate([
+                        { left: window.innerWidth / 2 + 'px', top: window.innerHeight / 2 + 'px', opacity: 1 },
+                        { left: targetX + 'px', top: targetY + 'px', opacity: 0 }
+                    ], {
+                        duration: 1000,
+                        easing: 'ease-out'
+                    });
+
+                    setTimeout(() => fireball.remove(), 1000);
+                }, i * 100);
+            }
+        }
+
+        function summonDementor() {
+            const dementor = document.createElement('div');
+            dementor.className = 'dementor';
+            dementor.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+            dementor.style.top = -150 + 'px';
+            document.body.appendChild(dementor);
+
+            dementors.push({ element: dementor });
+
+            dementor.animate([
+                { top: '-150px' },
+                { top: Math.random() * (window.innerHeight - 300) + 100 + 'px' }
+            ], {
+                duration: 2000,
+                fill: 'forwards',
+                easing: 'ease-out'
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles = particles.filter(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 2;
+                p.vy += 0.1;
+
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                return p.life > 0;
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
