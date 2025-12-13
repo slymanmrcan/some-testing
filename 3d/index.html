@@ -1,96 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>3D Intro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      background: #05070b;
-      overflow: hidden;
-      font-family: monospace;
-    }
-
-    #label {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #00ffe0;
-      letter-spacing: 3px;
-      font-size: 12px;
-      opacity: 0.9;
-      z-index: 10;
-    }
-  </style>
+  <meta charset="utf-8" />
+  <title>System Node</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div id="label">SYSTEM NODE ONLINE</div>
+<div id="hud">
+  <div id="title">SYSTEM NODE</div>
+  <div id="info">Move with WASD · Mouse to look</div>
+  <div id="project"></div>
+</div>
 
-<script type="module">
-  import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-
-  // Scene
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x05070b);
-
-  // Camera
-  const camera = new THREE.PerspectiveCamera(
-    60,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    100
-  );
-  camera.position.z = 4;
-
-  // Renderer
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  document.body.appendChild(renderer.domElement);
-
-  // Light
-  const light = new THREE.PointLight(0x00ffe0, 2, 10);
-  light.position.set(2, 2, 4);
-  scene.add(light);
-
-  const ambient = new THREE.AmbientLight(0x00ffe0, 0.15);
-  scene.add(ambient);
-
-  // Geometry (core)
-  const geometry = new THREE.IcosahedronGeometry(1.1, 1);
-  const material = new THREE.MeshStandardMaterial({
-    color: 0x001217,
-    emissive: 0x00ffe0,
-    emissiveIntensity: 0.5,
-    metalness: 0.85,
-    roughness: 0.25
-  });
-
-  const core = new THREE.Mesh(geometry, material);
-  scene.add(core);
-
-  // Animation
-  function animate() {
-    requestAnimationFrame(animate);
-
-    core.rotation.x += 0.003;
-    core.rotation.y += 0.006;
-
-    renderer.render(scene, camera);
-  }
-
-  animate();
-
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  });
-</script>
-
+<script type="module" src="main.js"></script>
 </body>
 </html>
