@@ -1,11 +1,10 @@
-import * as THREE from 'three';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import { PointerLockControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/PointerLockControls.js';
 
 export function createControls(camera, domElement, hud) {
   const controls = new PointerLockControls(camera, domElement);
   const move = { forward: false, back: false, left: false, right: false };
   const velocity = new THREE.Vector3();
-  let moving = false;
 
   domElement.addEventListener('click', () => controls.lock());
   controls.addEventListener('lock', () => hud.setHint('WASD to move, E to enter portals'));
@@ -18,9 +17,6 @@ export function createControls(camera, domElement, hud) {
       case 'KeyA': case 'ArrowLeft': move.left = true; break;
       case 'KeyD': case 'ArrowRight': move.right = true; break;
       default: break;
-    }
-    if (!controls.isLocked && (event.code.startsWith('Key') || event.code.startsWith('Arrow'))) {
-      controls.lock();
     }
   }
 
@@ -38,10 +34,7 @@ export function createControls(camera, domElement, hud) {
   document.addEventListener('keyup', onKeyUp);
 
   function update(delta) {
-    if (!controls.isLocked) {
-      moving = false;
-      return;
-    }
+    if (!controls.isLocked) return;
 
     const speed = 6;
     velocity.set(0, 0, 0);
@@ -51,9 +44,7 @@ export function createControls(camera, domElement, hud) {
     if (move.left) velocity.x -= 1;
     if (move.right) velocity.x += 1;
 
-    moving = velocity.lengthSq() > 0;
-
-    if (moving) {
+    if (velocity.lengthSq() > 0) {
       velocity.normalize().multiplyScalar(speed * delta);
       controls.moveRight(velocity.x);
       controls.moveForward(-velocity.z);
@@ -63,13 +54,5 @@ export function createControls(camera, domElement, hud) {
     pos.y = 1.6;
   }
 
-  function isMoving() {
-    return moving;
-  }
-
-  function isLocked() {
-    return controls.isLocked;
-  }
-
-  return { controls, update, isMoving, isLocked };
+  return { controls, update };
 }

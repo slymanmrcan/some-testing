@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import { createRenderer, createScene } from './engine/scene.js';
 import { createCamera } from './engine/camera.js';
 import { createControls } from './engine/controls.js';
@@ -40,13 +40,12 @@ state.registerRoom('room2', room2);
 state.setActiveRoom('room1');
 camera.position.copy(state.getActiveSpawn());
 
-hud.setHint('Click or press WASD to lock, then move with WASD + mouse look');
+hud.setHint('Click to lock, WASD to move, mouse to look');
 hud.setTitle('Neon Terminal Portfolio');
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2(0, 0);
 let portalCandidate = null;
-let pillCandidate = null;
 
 function handleResize() {
   const width = window.innerWidth;
@@ -69,15 +68,11 @@ function updateRaycast() {
 
   raycaster.setFromCamera(pointer, camera);
   const hits = raycaster.intersectObjects(targets, false);
-  pillCandidate = null;
   if (hits.length > 0) {
     const hit = hits[0].object;
     const data = hit.userData || {};
     if (data.type === 'project') {
       hud.showProject(data);
-    } else if (data.type === 'pill') {
-      hud.showProject(data);
-      pillCandidate = data;
     } else {
       hud.clearPanel();
     }
@@ -86,7 +81,7 @@ function updateRaycast() {
   }
 }
 
-function updatePortal() {
+function updatePortal(delta) {
   const portal = state.getPortal();
   if (!portal) {
     hud.hidePortalHint();
@@ -113,25 +108,13 @@ function switchRoom(targetRoom) {
 window.addEventListener('keydown', (event) => {
   if (event.code === 'KeyE' && portalCandidate) {
     switchRoom(portalCandidate.targetRoom);
-  } else if (event.code === 'KeyE' && pillCandidate) {
-    if (pillCandidate.pillType === 'red') {
-      switchRoom('room2');
-    } else if (pillCandidate.pillType === 'blue') {
-      hud.showPortalHint('Blue pill: stay in the lobby and look around.');
-      setTimeout(() => hud.hidePortalHint(), 2000);
-    }
-  }
-});
-window.addEventListener('click', () => {
-  if (!controls.isLocked()) {
-    controls.controls.lock();
   }
 });
 
 loop.addUpdater((delta) => {
   controls.update(delta);
-  updateRaycast();
-  updatePortal();
+  updateRaycast(delta);
+  updatePortal(delta);
 });
 
 loop.start();
