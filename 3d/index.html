@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Efendimiz / System Node</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #0b0f14;
+      color: #9fffe8;
+      font-family: monospace;
+      overflow: hidden;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 10;
+      line-height: 1.4;
+    }
+
+    #overlay h1 {
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: 2px;
+      color: #00ffe0;
+    }
+
+    #overlay p {
+      margin: 4px 0;
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    #footer {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      font-size: 11px;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+
+<div id="overlay">
+  <h1>SYSTEM / NODE</h1>
+  <p>Status: ONLINE</p>
+  <p>Role: Backend-Driven Engineer</p>
+  <p>Stack: .NET · Go · DevOps · Systems</p>
+</div>
+
+<div id="footer">
+  github.com / smtechlab
+</div>
+
+<script type="module">
+  import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0x0b0f14, 5, 15);
+
+  const camera = new THREE.PerspectiveCamera(
+    60,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    100
+  );
+  camera.position.set(0, 1.5, 4);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  document.body.appendChild(renderer.domElement);
+
+  // Işıklar (kritik – vibe buradan gelir)
+  const ambient = new THREE.AmbientLight(0x00ffe0, 0.15);
+  scene.add(ambient);
+
+  const keyLight = new THREE.PointLight(0x00ffe0, 1.2, 10);
+  keyLight.position.set(2, 3, 2);
+  scene.add(keyLight);
+
+  // Sistem çekirdeği (placeholder)
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x00ffe0,
+    emissive: 0x00ffe0,
+    emissiveIntensity: 0.4,
+    metalness: 0.9,
+    roughness: 0.2
+  });
+
+  const core = new THREE.Mesh(geometry, material);
+  scene.add(core);
+
+  // Grid (altyapı hissi)
+  const grid = new THREE.GridHelper(10, 20, 0x00ffe0, 0x003333);
+  grid.position.y = -1;
+  scene.add(grid);
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    core.rotation.y += 0.003;
+    core.rotation.x += 0.001;
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+
+</body>
+</html>
