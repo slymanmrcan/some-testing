@@ -40,8 +40,8 @@ state.registerRoom('room2', room2);
 state.setActiveRoom('room1');
 camera.position.copy(state.getActiveSpawn());
 
-hud.setHint('Click or press WASD to lock, then move with WASD + mouse look');
-hud.setTitle('Neon Terminal Portfolio');
+hud.setHint('Click/WASD to lock. Nişan al + tık/E: hap. Portalda E ile Signal Lab.');
+hud.setTitle('');
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2(0, 0);
@@ -68,16 +68,17 @@ function updateRaycast() {
   }
 
   raycaster.setFromCamera(pointer, camera);
-  const hits = raycaster.intersectObjects(targets, false);
+  const hits = raycaster.intersectObjects(targets, true);
   pillCandidate = null;
   if (hits.length > 0) {
-    const hit = hits[0].object;
-    const data = hit.userData || {};
-    if (data.type === 'project') {
+    let node = hits[0].object;
+    while (node && !node.userData?.type) {
+      node = node.parent;
+    }
+    const data = (node && node.userData) || {};
+    if (data.type === 'project' || data.type === 'pill') {
       hud.showProject(data);
-    } else if (data.type === 'pill') {
-      hud.showProject(data);
-      pillCandidate = data;
+      if (data.type === 'pill') pillCandidate = data;
     } else {
       hud.clearPanel();
     }
@@ -108,20 +109,36 @@ function switchRoom(targetRoom) {
   const next = state.setActiveRoom(targetRoom);
   camera.position.copy(next.spawn);
   hud.hidePortalHint();
+  if (targetRoom === 'room2') {
+    hud.setHint('Signal Lab: CV panoları merkezde, projeler halka; nişanla okumak için yaklaş.');
+  } else {
+    hud.setHint('Click/WASD to lock. Nişan al + tık/E: hap. Portalda E ile Signal Lab.');
+  }
+}
+
+function handlePillChoice(choice) {
+  if (!choice) return;
+  if (choice.pillType === 'red') {
+    hud.showPortalHint('Kırmızı hap: Portal açık, E ile geç');
+    setTimeout(() => hud.hidePortalHint(), 2200);
+  } else if (choice.pillType === 'blue') {
+    hud.showPortalHint('Mavi hap: Lobide kal, serbestçe gez');
+    setTimeout(() => hud.hidePortalHint(), 2000);
+  }
 }
 
 window.addEventListener('keydown', (event) => {
   if (event.code === 'KeyE' && portalCandidate) {
     switchRoom(portalCandidate.targetRoom);
   } else if (event.code === 'KeyE' && pillCandidate) {
-    if (pillCandidate.pillType === 'red') {
-      switchRoom('room2');
-    } else if (pillCandidate.pillType === 'blue') {
-      hud.showPortalHint('Blue pill: stay in the lobby and look around.');
-      setTimeout(() => hud.hidePortalHint(), 2000);
-    }
+    handlePillChoice(pillCandidate);
   }
 });
+
+window.addEventListener('mousedown', () => {
+  if (pillCandidate) handlePillChoice(pillCandidate);
+});
+
 window.addEventListener('click', () => {
   if (!controls.isLocked()) {
     controls.controls.lock();

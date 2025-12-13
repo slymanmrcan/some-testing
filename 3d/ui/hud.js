@@ -21,6 +21,17 @@ export function createHUD(root) {
   portalHint.className = 'portal-hint';
   root.appendChild(portalHint);
 
+  const minimap = document.createElement('div');
+  minimap.className = 'mini-map';
+  minimap.innerHTML = `
+    <div class="label">fake map</div>
+    <div class="map-box">
+      <div class="you-are-here"></div>
+    </div>
+    <div class="label">you are here</div>
+  `;
+  root.appendChild(minimap);
+
   function setTitle(text) { title.textContent = text; }
   function setHint(text) { hint.textContent = text; }
 

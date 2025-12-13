@@ -4,6 +4,7 @@ import { createPortal } from './portal.js';
 export function buildRoom1() {
   const group = new THREE.Group();
   const rayTargets = [];
+  let portalActivated = false;
 
   const floorGeo = new THREE.PlaneGeometry(30, 30);
   const floorMat = new THREE.MeshStandardMaterial({
@@ -99,26 +100,34 @@ export function buildRoom1() {
   pill({
     color: 0xff365f,
     name: 'Red Pill',
-    desc: 'Signal Lab’a geç, projeleri ve özgeçmiş panellerini gör.',
+    desc: 'Signal Lab’a geçmek için portala güç ver.',
     pillType: 'red',
     position: new THREE.Vector3(1.2, 0, -3)
   });
 
   const portal = createPortal({
-    position: new THREE.Vector3(0, 1.8, -6.5),
+    position: new THREE.Vector3(0, 1.8, -4.2),
     targetRoom: 'room2',
     color: 0x35f3ff,
     label: 'Press E to enter the Signal Lab'
   });
+  portal.mesh.visible = true;
+  portal.mesh.userData.locked = false; // always usable now
   group.add(portal.mesh);
 
-  const spawn = new THREE.Vector3(0, 1.6, 2.5);
+  const spawn = new THREE.Vector3(0, 1.6, 1.8);
 
   return {
     name: 'room1',
     group,
     rayTargets: [...rayTargets, portal.mesh],
     portal,
-    spawn
+    spawn,
+    activatePortal() {
+      if (portalActivated) return;
+      portalActivated = true;
+      portal.mesh.userData.locked = false;
+      if (!rayTargets.includes(portal.mesh)) rayTargets.push(portal.mesh);
+    }
   };
 }

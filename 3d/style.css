@@ -163,6 +163,48 @@ body, html {
 
 .portal-hint.show { display: block; }
 
+.mini-map {
+  position: absolute;
+  left: 18px;
+  top: 110px;
+  width: 180px;
+  height: 180px;
+  border: 1px solid var(--neon-2);
+  background: rgba(10, 18, 34, 0.8);
+  color: var(--text);
+  padding: 10px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 0 18px rgba(255, 47, 212, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mini-map .map-box {
+  flex: 1;
+  border: 1px dashed var(--neon);
+  position: relative;
+  background: radial-gradient(circle at 50% 50%, rgba(53, 243, 255, 0.08), rgba(10, 18, 34, 0.6));
+}
+
+.mini-map .you-are-here {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--neon-2);
+  border-radius: 50%;
+  left: 50%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px rgba(255, 47, 212, 0.7);
+}
+
+.mini-map .label {
+  color: var(--muted);
+}
+
 @media (max-width: 720px) {
   .hud-panel { max-width: 90%; left: 5%; }
   .hud-hint { display: none; }
