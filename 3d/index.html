@@ -1,125 +1,403 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Efendimiz / System Node</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SYSTEM / CYBER ROOM</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: #0b0f14;
-      color: #9fffe8;
-      font-family: monospace;
-      overflow: hidden;
-    }
+    html, body { margin:0; height:100%; overflow:hidden; background:#06080c; }
+    canvas { display:block; }
 
-    #overlay {
+    /* HUD */
+    .hud {
       position: fixed;
-      top: 16px;
-      left: 16px;
-      z-index: 10;
-      line-height: 1.4;
+      inset: 0;
+      pointer-events: none;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      color: rgba(180, 255, 235, 0.92);
+      mix-blend-mode: screen;
     }
-
-    #overlay h1 {
-      margin: 0;
-      font-size: 14px;
-      letter-spacing: 2px;
-      color: #00ffe0;
+    .topLeft {
+      position: absolute;
+      top: 16px; left: 16px;
+      padding: 10px 12px;
+      border: 1px solid rgba(0, 255, 224, 0.20);
+      border-radius: 12px;
+      background: rgba(2, 10, 12, 0.35);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 30px rgba(0, 255, 224, 0.10);
     }
+    .title { letter-spacing: 3px; font-size: 12px; color: rgba(0,255,224,0.95); }
+    .sub { margin-top: 6px; font-size: 12px; opacity: 0.85; line-height: 1.35; }
 
-    #overlay p {
-      margin: 4px 0;
+    .topRight {
+      position: absolute;
+      top: 16px; right: 16px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 0, 128, 0.20);
+      border-radius: 12px;
+      background: rgba(10, 2, 8, 0.25);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 30px rgba(255, 0, 128, 0.10);
+      text-align: right;
       font-size: 12px;
-      opacity: 0.8;
+      line-height: 1.35;
+      opacity: 0.95;
     }
 
-    #footer {
-      position: fixed;
+    .bottomBar {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
       bottom: 16px;
-      right: 16px;
-      font-size: 11px;
-      opacity: 0.6;
+      padding: 10px 12px;
+      border: 1px solid rgba(0, 255, 224, 0.18);
+      border-radius: 999px;
+      background: rgba(2, 10, 12, 0.28);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 30px rgba(0, 255, 224, 0.08);
+      font-size: 12px;
+      opacity: 0.90;
+      white-space: nowrap;
+    }
+
+    .scanlines {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to bottom,
+          rgba(0,0,0,0) 0%,
+          rgba(0,0,0,0) 96%,
+          rgba(0,0,0,0.18) 100%);
+      background-size: 100% 6px;
+      opacity: 0.45;
+    }
+
+    .vignette {
+      position: absolute; inset: 0;
+      background: radial-gradient(closest-side, rgba(0,0,0,0) 60%, rgba(0,0,0,0.65) 100%);
+      opacity: 0.9;
     }
   </style>
 </head>
 <body>
+  <div class="hud">
+    <div class="topLeft">
+      <div class="title">SYSTEM / CYBER ROOM</div>
+      <div class="sub">
+        Status: <span style="color:rgba(0,255,224,0.95)">ONLINE</span><br/>
+        Mode: <span style="color:rgba(255,0,128,0.90)">NEON CORE</span><br/>
+        Controls: Drag = orbit, Scroll = zoom<br/>
+        Key: <span style="opacity:.9">B</span> Bloom, <span style="opacity:.9">G</span> Glitch, <span style="opacity:.9">R</span> Reset
+      </div>
+    </div>
 
-<div id="overlay">
-  <h1>SYSTEM / NODE</h1>
-  <p>Status: ONLINE</p>
-  <p>Role: Backend-Driven Engineer</p>
-  <p>Stack: .NET · Go · DevOps · Systems</p>
-</div>
+    <div class="topRight">
+      <div style="color:rgba(255,0,128,0.92); letter-spacing:2px;">BACKEND VIBE</div>
+      <div style="opacity:.9;">
+        .NET · Go · DevOps<br/>
+        Security-aware builds<br/>
+        Deterministic systems
+      </div>
+    </div>
 
-<div id="footer">
-  github.com / smtechlab
-</div>
+    <div class="bottomBar">
+      “Looks like frontend. Operates like infrastructure.” — SYS NODE
+    </div>
 
-<script type="module">
-  import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+  </div>
 
-  const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0x0b0f14, 5, 15);
+  <script type="module">
+    import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+    import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+    import { EffectComposer } from "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js";
+    import { RenderPass } from "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/RenderPass.js";
+    import { UnrealBloomPass } from "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js";
+    import { GlitchPass } from "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/GlitchPass.js";
 
-  const camera = new THREE.PerspectiveCamera(
-    60,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    100
-  );
-  camera.position.set(0, 1.5, 4);
+    // --- Core ---
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x06080c);
+    scene.fog = new THREE.Fog(0x06080c, 6, 40);
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  document.body.appendChild(renderer.domElement);
+    const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 150);
+    camera.position.set(0, 2.2, 9);
 
-  // Işıklar (kritik – vibe buradan gelir)
-  const ambient = new THREE.AmbientLight(0x00ffe0, 0.15);
-  scene.add(ambient);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+    document.body.appendChild(renderer.domElement);
 
-  const keyLight = new THREE.PointLight(0x00ffe0, 1.2, 10);
-  keyLight.position.set(2, 3, 2);
-  scene.add(keyLight);
+    // Controls (oda hissi için orbit)
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.target.set(0, 1.3, 0);
+    controls.maxPolarAngle = Math.PI * 0.52;
+    controls.minDistance = 4.5;
+    controls.maxDistance = 16;
 
-  // Sistem çekirdeği (placeholder)
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
-  const material = new THREE.MeshStandardMaterial({
-    color: 0x00ffe0,
-    emissive: 0x00ffe0,
-    emissiveIntensity: 0.4,
-    metalness: 0.9,
-    roughness: 0.2
-  });
+    // --- Post ---
+    const composer = new EffectComposer(renderer);
+    const renderPass = new RenderPass(scene, camera);
+    composer.addPass(renderPass);
 
-  const core = new THREE.Mesh(geometry, material);
-  scene.add(core);
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 1.25, 0.55, 0.16);
+    composer.addPass(bloomPass);
 
-  // Grid (altyapı hissi)
-  const grid = new THREE.GridHelper(10, 20, 0x00ffe0, 0x003333);
-  grid.position.y = -1;
-  scene.add(grid);
+    const glitchPass = new GlitchPass();
+    glitchPass.enabled = false;
+    composer.addPass(glitchPass);
 
-  function animate() {
-    requestAnimationFrame(animate);
+    let bloomOn = true;
+    let glitchOn = false;
 
-    core.rotation.y += 0.003;
-    core.rotation.x += 0.001;
+    // --- Lights ---
+    const ambient = new THREE.AmbientLight(0x00ffe0, 0.09);
+    scene.add(ambient);
 
-    renderer.render(scene, camera);
-  }
+    const keyCyan = new THREE.PointLight(0x00ffe0, 2.2, 30, 2);
+    keyCyan.position.set(4, 4, 6);
+    scene.add(keyCyan);
 
-  animate();
+    const keyMagenta = new THREE.PointLight(0xff0080, 1.8, 28, 2);
+    keyMagenta.position.set(-4, 3, -2);
+    scene.add(keyMagenta);
 
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  });
-</script>
+    const rim = new THREE.SpotLight(0x66ffcc, 1.6, 45, Math.PI * 0.22, 0.6, 1.2);
+    rim.position.set(0, 10, 0);
+    rim.target.position.set(0, 1, 0);
+    scene.add(rim, rim.target);
 
+    // --- Materials ---
+    const matWall = new THREE.MeshStandardMaterial({
+      color: 0x0a0f14,
+      metalness: 0.6,
+      roughness: 0.35,
+      emissive: 0x001d1a,
+      emissiveIntensity: 0.15
+    });
+
+    const matFloor = new THREE.MeshStandardMaterial({
+      color: 0x070a0f,
+      metalness: 0.55,
+      roughness: 0.25,
+      emissive: 0x001411,
+      emissiveIntensity: 0.10
+    });
+
+    const matNeonCyan = new THREE.MeshStandardMaterial({
+      color: 0x00ffe0,
+      emissive: 0x00ffe0,
+      emissiveIntensity: 1.25,
+      metalness: 0.2,
+      roughness: 0.2
+    });
+
+    const matNeonMagenta = new THREE.MeshStandardMaterial({
+      color: 0xff0080,
+      emissive: 0xff0080,
+      emissiveIntensity: 1.10,
+      metalness: 0.2,
+      roughness: 0.25
+    });
+
+    // --- Room / Corridor geometry ---
+    const room = new THREE.Group();
+    scene.add(room);
+
+    // Floor
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(24, 48, 1, 1), matFloor);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = 0;
+    floor.position.z = -8;
+    room.add(floor);
+
+    // Walls
+    const wallL = new THREE.Mesh(new THREE.BoxGeometry(0.6, 6, 48), matWall);
+    wallL.position.set(-6.6, 3, -8);
+    room.add(wallL);
+
+    const wallR = new THREE.Mesh(new THREE.BoxGeometry(0.6, 6, 48), matWall);
+    wallR.position.set(6.6, 3, -8);
+    room.add(wallR);
+
+    // Ceiling
+    const ceil = new THREE.Mesh(new THREE.BoxGeometry(14, 0.6, 48), matWall);
+    ceil.position.set(0, 6.3, -8);
+    room.add(ceil);
+
+    // Back frame / portal
+    const portalFrame = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.12, 18, 80), matNeonCyan);
+    portalFrame.position.set(0, 2.3, -26);
+    room.add(portalFrame);
+
+    const portalCore = new THREE.Mesh(new THREE.CircleGeometry(1.22, 80), new THREE.MeshStandardMaterial({
+      color: 0x00100d,
+      emissive: 0x00ffe0,
+      emissiveIntensity: 0.35,
+      metalness: 0.1,
+      roughness: 0.6
+    }));
+    portalCore.position.set(0, 2.3, -26.02);
+    room.add(portalCore);
+
+    // Grid lines (neon strips)
+    const strips = new THREE.Group();
+    room.add(strips);
+
+    function addStrip(x, y, z, len, colorMat) {
+      const strip = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, len), colorMat);
+      strip.position.set(x, y, z);
+      strips.add(strip);
+      return strip;
+    }
+
+    // floor strips down corridor
+    const stripA = addStrip(-2.2, 0.04, -8, 42, matNeonCyan);
+    const stripB = addStrip( 2.2, 0.04, -8, 42, matNeonMagenta);
+
+    // wall strips
+    const stripC = new THREE.Mesh(new THREE.BoxGeometry(0.08, 3.0, 0.08), matNeonCyan);
+    stripC.position.set(-6.35, 3.0, -2);
+    room.add(stripC);
+
+    const stripD = new THREE.Mesh(new THREE.BoxGeometry(0.08, 3.0, 0.08), matNeonMagenta);
+    stripD.position.set(6.35, 3.0, -14);
+    room.add(stripD);
+
+    // Holo panels (floating screens)
+    const panels = new THREE.Group();
+    room.add(panels);
+
+    function holoPanel(x, y, z, w, h, mat, rotY=0) {
+      const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshStandardMaterial({
+        color: 0x041014,
+        emissive: mat.emissive ? mat.emissive : 0x00ffe0,
+        emissiveIntensity: 0.9,
+        metalness: 0.1,
+        roughness: 0.35,
+        transparent: true,
+        opacity: 0.85
+      }));
+      p.position.set(x, y, z);
+      p.rotation.y = rotY;
+      panels.add(p);
+      return p;
+    }
+
+    const panel1 = holoPanel(-3.8, 2.4, -6, 2.6, 1.2, matNeonCyan, Math.PI*0.10);
+    const panel2 = holoPanel( 3.8, 2.1, -10, 2.2, 1.0, matNeonMagenta, -Math.PI*0.10);
+    const panel3 = holoPanel( 0.0, 3.6, -18, 3.2, 1.5, matNeonCyan, 0);
+
+    // Floating “core”
+    const coreGroup = new THREE.Group();
+    coreGroup.position.set(0, 1.6, -6);
+    room.add(coreGroup);
+
+    const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.85, 1), new THREE.MeshStandardMaterial({
+      color: 0x001016,
+      emissive: 0x00ffe0,
+      emissiveIntensity: 0.65,
+      metalness: 0.85,
+      roughness: 0.18
+    }));
+    coreGroup.add(core);
+
+    const coreRing = new THREE.Mesh(new THREE.TorusGeometry(1.35, 0.05, 16, 120), matNeonMagenta);
+    coreRing.rotation.x = Math.PI / 2;
+    coreGroup.add(coreRing);
+
+    // “Data particles”
+    const particlesCount = 1800;
+    const positions = new Float32Array(particlesCount * 3);
+    for (let i = 0; i < particlesCount; i++) {
+      const x = (Math.random() - 0.5) * 18;
+      const y = Math.random() * 7;
+      const z = - (Math.random() * 40);
+      positions[i*3+0] = x;
+      positions[i*3+1] = y;
+      positions[i*3+2] = z - 2;
+    }
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+    const pMat = new THREE.PointsMaterial({
+      size: 0.02,
+      color: 0x66ffcc,
+      transparent: true,
+      opacity: 0.75
+    });
+
+    const points = new THREE.Points(pGeo, pMat);
+    room.add(points);
+
+    // --- Animation ---
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+
+      controls.update();
+
+      // neon pulse
+      const pulse = 0.75 + Math.sin(t * 2.2) * 0.25;
+      matNeonCyan.emissiveIntensity = 1.05 * pulse;
+      matNeonMagenta.emissiveIntensity = 0.95 * (0.85 + Math.cos(t * 1.9) * 0.22);
+
+      // core motion
+      coreGroup.position.y = 1.55 + Math.sin(t * 1.2) * 0.12;
+      core.rotation.y += 0.006;
+      core.rotation.x += 0.0025;
+      coreRing.rotation.z += 0.008;
+
+      // panels shimmer
+      panel1.position.y = 2.4 + Math.sin(t * 1.5) * 0.05;
+      panel2.position.y = 2.1 + Math.cos(t * 1.3) * 0.05;
+      panel3.material.opacity = 0.78 + Math.sin(t * 2.0) * 0.06;
+
+      // data drift
+      points.rotation.y = Math.sin(t * 0.12) * 0.08;
+
+      // portal throb
+      portalFrame.scale.setScalar(1.0 + Math.sin(t * 2.0) * 0.02);
+
+      // render
+      if (bloomOn) composer.render();
+      else renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // --- Resize ---
+    addEventListener("resize", () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+      composer.setSize(innerWidth, innerHeight);
+    });
+
+    // --- Keybinds ---
+    addEventListener("keydown", (e) => {
+      const k = e.key.toLowerCase();
+      if (k === "b") {
+        bloomOn = !bloomOn;
+        bloomPass.enabled = bloomOn;
+      }
+      if (k === "g") {
+        glitchOn = !glitchOn;
+        glitchPass.enabled = glitchOn;
+      }
+      if (k === "r") {
+        camera.position.set(0, 2.2, 9);
+        controls.target.set(0, 1.3, 0);
+        controls.update();
+      }
+    });
+  </script>
 </body>
 </html>
