@@ -3,401 +3,899 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SYSTEM / CYBER ROOM</title>
-  <style>
-    html, body { margin:0; height:100%; overflow:hidden; background:#06080c; }
-    canvas { display:block; }
+  <title>Efendimiz — SYSTEM NODE</title>
+  <meta name="description" content="Backend-driven engineer portfolio. .NET, Go, DevOps, security-aware systems." />
 
-    /* HUD */
-    .hud {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      color: rgba(180, 255, 235, 0.92);
+  <style>
+    :root{
+      --bg:#06080c;
+      --panel:#0b0f14cc;
+      --panel2:#0a0d12b3;
+      --text:#b9ffe9;
+      --muted:#79d7c5;
+      --cyan:#00ffe0;
+      --mag:#ff0080;
+      --warn:#ffd166;
+      --line:#00ffe033;
+      --shadow: 0 0 40px rgba(0,255,224,.10);
+      --radius: 18px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background: radial-gradient(1000px 600px at 70% 10%, rgba(0,255,224,.08), transparent 60%),
+                  radial-gradient(900px 500px at 20% 30%, rgba(255,0,128,.07), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      overflow-x:hidden;
+    }
+
+    /* Matrix-ish noise + scanlines */
+    .fx{
+      position:fixed; inset:0;
+      pointer-events:none;
+      z-index:0;
+    }
+    .fx::before{
+      content:"";
+      position:absolute; inset:-20%;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(0,0,0,0) 0px,
+          rgba(0,0,0,0) 5px,
+          rgba(0,0,0,.18) 6px
+        );
+      opacity:.45;
+      animation: scan 9s linear infinite;
+      mix-blend-mode: multiply;
+    }
+    .fx::after{
+      content:"";
+      position:absolute; inset:0;
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(0,255,224,.10), transparent 35%),
+        radial-gradient(circle at 80% 30%, rgba(255,0,128,.08), transparent 40%),
+        radial-gradient(circle at 50% 80%, rgba(0,255,224,.06), transparent 45%);
+      opacity:.7;
       mix-blend-mode: screen;
     }
-    .topLeft {
-      position: absolute;
-      top: 16px; left: 16px;
-      padding: 10px 12px;
-      border: 1px solid rgba(0, 255, 224, 0.20);
-      border-radius: 12px;
-      background: rgba(2, 10, 12, 0.35);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 0 30px rgba(0, 255, 224, 0.10);
+    @keyframes scan{
+      0%{ transform: translateY(-2%); }
+      100%{ transform: translateY(2%); }
     }
-    .title { letter-spacing: 3px; font-size: 12px; color: rgba(0,255,224,0.95); }
-    .sub { margin-top: 6px; font-size: 12px; opacity: 0.85; line-height: 1.35; }
 
-    .topRight {
-      position: absolute;
-      top: 16px; right: 16px;
-      padding: 10px 12px;
-      border: 1px solid rgba(255, 0, 128, 0.20);
-      border-radius: 12px;
-      background: rgba(10, 2, 8, 0.25);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 0 30px rgba(255, 0, 128, 0.10);
-      text-align: right;
+    .wrap{
+      position:relative;
+      z-index:1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px 16px 60px;
+    }
+
+    /* Top bar */
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 12px 12px;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(10,14,20,.70), rgba(5,7,10,.35));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 240px;
+    }
+    .logo{
+      width:40px; height:40px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,255,224,.25);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(0,255,224,.35), transparent 60%),
+        radial-gradient(circle at 70% 70%, rgba(255,0,128,.22), transparent 62%),
+        linear-gradient(135deg, rgba(0,255,224,.12), rgba(255,0,128,.10));
+      box-shadow: 0 0 22px rgba(0,255,224,.14);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo::after{
+      content:"";
+      position:absolute; inset:-60%;
+      background: linear-gradient(90deg, transparent, rgba(0,255,224,.25), transparent);
+      transform: rotate(20deg);
+      animation: sweep 3.8s linear infinite;
+      opacity:.85;
+    }
+    @keyframes sweep{
+      0%{ transform: translateX(-30%) rotate(20deg); }
+      100%{ transform: translateX(30%) rotate(20deg); }
+    }
+
+    .brand h1{
+      margin:0;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--cyan);
+      line-height:1.1;
+    }
+    .brand .tag{
+      margin-top:3px;
       font-size: 12px;
-      line-height: 1.35;
-      opacity: 0.95;
+      opacity:.85;
+      color: var(--muted);
     }
 
-    .bottomBar {
-      position: absolute;
+    nav{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .btn{
+      pointer-events:auto;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,255,224,.20);
+      background: rgba(2,10,12,.28);
+      color: var(--text);
+      text-decoration:none;
+      font-size: 12px;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(0,255,224,.40);
+      background: rgba(2,10,12,.40);
+    }
+    .btn.mag{ border-color: rgba(255,0,128,.22); }
+    .btn.mag:hover{ border-color: rgba(255,0,128,.45); }
+
+    /* Hero */
+    .hero{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
+    }
+    @media (max-width: 900px){
+      .hero{ grid-template-columns:1fr; }
+      .brand{ min-width: unset; }
+    }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(10,14,20,.66), rgba(5,7,10,.30));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding: 14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:-40%;
+      background: radial-gradient(circle at 30% 30%, rgba(0,255,224,.12), transparent 55%);
+      opacity:.8;
+      transform: rotate(-10deg);
+      pointer-events:none;
+    }
+
+    .headline{
+      position:relative;
+      margin:0 0 10px 0;
+      font-size: 16px;
+      letter-spacing: 1px;
+      line-height: 1.4;
+    }
+    .headline .accent{ color: var(--cyan); }
+    .lead{
+      position:relative;
+      margin:0;
+      font-size: 12px;
+      line-height: 1.6;
+      opacity:.92;
+      color: rgba(185,255,233,.90);
+    }
+
+    .kpis{
+      position:relative;
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    .kpi{
+      border: 1px solid rgba(0,255,224,.18);
+      border-radius: 14px;
+      background: rgba(2,10,12,.22);
+      padding: 10px;
+      min-height: 64px;
+    }
+    .kpi .v{
+      font-size: 14px;
+      color: var(--cyan);
+      letter-spacing: 1px;
+    }
+    .kpi .l{
+      margin-top:4px;
+      font-size: 11px;
+      opacity:.85;
+      color: var(--muted);
+    }
+    @media (max-width: 520px){
+      .kpis{ grid-template-columns: 1fr; }
+    }
+
+    /* Terminal */
+    .terminal{
+      position:relative;
+      border-radius: 16px;
+      border:1px solid rgba(255,0,128,.20);
+      background: rgba(10,2,8,.18);
+      padding: 12px;
+      min-height: 260px;
+      overflow:hidden;
+    }
+    .termTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+      position:relative;
+    }
+    .dots{ display:flex; gap:6px; }
+    .dot{ width:10px; height:10px; border-radius:99px; opacity:.9; }
+    .d1{ background:#ff5f56; }
+    .d2{ background:#ffbd2e; }
+    .d3{ background:#27c93f; }
+
+    .termTitle{
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: rgba(255,0,128,.88);
+      opacity:.95;
+    }
+
+    .termBody{
+      font-size: 12px;
+      line-height: 1.55;
+      opacity:.95;
+      max-height: 210px;
+      overflow:auto;
+      padding-right: 6px;
+    }
+    .termBody::-webkit-scrollbar{ width: 8px; }
+    .termBody::-webkit-scrollbar-thumb{
+      background: rgba(255,0,128,.22);
+      border-radius: 99px;
+    }
+    .prompt{ color: rgba(0,255,224,.92); }
+    .cmd{ color: rgba(255,0,128,.90); }
+    .out{ color: rgba(185,255,233,.88); opacity:.95; }
+    .muted{ opacity:.75; }
+
+    /* Section header */
+    .section{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+    .sectionHeader{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .sectionHeader h2{
+      margin:0;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--cyan);
+      opacity:.95;
+    }
+
+    .filters{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .input{
+      pointer-events:auto;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,255,224,.18);
+      background: rgba(2,10,12,.25);
+      color: var(--text);
+      outline:none;
+      font-size: 12px;
+      min-width: 220px;
+    }
+    .chip{
+      pointer-events:auto;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,255,224,.16);
+      background: rgba(2,10,12,.20);
+      color: var(--text);
+      font-size: 12px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+    .chip:hover{ transform: translateY(-1px); border-color: rgba(0,255,224,.32); }
+    .chip.active{
+      border-color: rgba(0,255,224,.48);
+      background: rgba(0,255,224,.10);
+    }
+
+    /* Projects grid */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+    }
+    @media (max-width: 980px){ .grid{ grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px){ .grid{ grid-template-columns: 1fr; } }
+
+    .proj{
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(0,255,224,.18);
+      background: rgba(2,10,12,.22);
+      position:relative;
+      overflow:hidden;
+      min-height: 156px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .proj::after{
+      content:"";
+      position:absolute;
+      inset:-60%;
+      background: radial-gradient(circle at 30% 30%, rgba(0,255,224,.10), transparent 60%);
+      opacity:.7;
+      pointer-events:none;
+    }
+    .projTop{
+      position:relative;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .projName{
+      font-size: 13px;
+      letter-spacing: 1px;
+      color: rgba(0,255,224,.92);
+      margin:0;
+    }
+    .badge{
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,0,128,.22);
+      color: rgba(255,0,128,.92);
+      background: rgba(255,0,128,.08);
+      white-space:nowrap;
+    }
+    .projDesc{
+      position:relative;
+      margin:0;
+      font-size: 12px;
+      line-height: 1.55;
+      opacity:.9;
+      color: rgba(185,255,233,.88);
+    }
+    .tags{
+      position:relative;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:auto;
+    }
+    .tag{
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,255,224,.14);
+      background: rgba(0,255,224,.06);
+      opacity:.92;
+      white-space:nowrap;
+    }
+    .links{
+      position:relative;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 6px;
+    }
+    .a{
+      pointer-events:auto;
+      font-size: 12px;
+      color: rgba(0,255,224,.92);
+      text-decoration:none;
+      border-bottom: 1px dashed rgba(0,255,224,.35);
+      padding-bottom: 2px;
+      opacity:.95;
+    }
+    .a:hover{ opacity:1; border-bottom-color: rgba(0,255,224,.75); }
+
+    /* Footer */
+    footer{
+      margin-top:16px;
+      padding: 14px;
+      border:1px solid rgba(0,255,224,.12);
+      border-radius: var(--radius);
+      background: rgba(2,10,12,.18);
+      opacity:.92;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    footer .left{ font-size: 12px; color: rgba(185,255,233,.85); }
+    footer .right{ font-size: 12px; color: rgba(185,255,233,.75); }
+
+    /* Glitch title (subtle) */
+    .glitch{
+      position:relative;
+      display:inline-block;
+    }
+    .glitch::before,.glitch::after{
+      content: attr(data-text);
+      position:absolute; left:0; top:0;
+      opacity:.35;
+      clip-path: inset(0 0 0 0);
+      pointer-events:none;
+    }
+    .glitch::before{
+      transform: translate(1px,0);
+      color: var(--mag);
+      mix-blend-mode: screen;
+      animation: glitch1 6s infinite;
+    }
+    .glitch::after{
+      transform: translate(-1px,0);
+      color: var(--cyan);
+      mix-blend-mode: screen;
+      animation: glitch2 7.5s infinite;
+    }
+    @keyframes glitch1{
+      0%, 95%, 100%{ clip-path: inset(0 0 0 0); }
+      96%{ clip-path: inset(10% 0 70% 0); }
+      97%{ clip-path: inset(60% 0 20% 0); }
+      98%{ clip-path: inset(25% 0 55% 0); }
+    }
+    @keyframes glitch2{
+      0%, 92%, 100%{ clip-path: inset(0 0 0 0); }
+      93%{ clip-path: inset(55% 0 15% 0); }
+      94%{ clip-path: inset(15% 0 65% 0); }
+      95%{ clip-path: inset(35% 0 40% 0); }
+    }
+
+    /* Toast */
+    .toast{
+      position: fixed;
       left: 50%;
       transform: translateX(-50%);
-      bottom: 16px;
+      bottom: 18px;
+      z-index: 10;
       padding: 10px 12px;
-      border: 1px solid rgba(0, 255, 224, 0.18);
       border-radius: 999px;
-      background: rgba(2, 10, 12, 0.28);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 0 30px rgba(0, 255, 224, 0.08);
+      border: 1px solid rgba(0,255,224,.18);
+      background: rgba(2,10,12,.55);
+      box-shadow: var(--shadow);
       font-size: 12px;
-      opacity: 0.90;
-      white-space: nowrap;
+      opacity:0;
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events:none;
     }
-
-    .scanlines {
-      position: absolute; inset: 0;
-      background:
-        linear-gradient(to bottom,
-          rgba(0,0,0,0) 0%,
-          rgba(0,0,0,0) 96%,
-          rgba(0,0,0,0.18) 100%);
-      background-size: 100% 6px;
-      opacity: 0.45;
-    }
-
-    .vignette {
-      position: absolute; inset: 0;
-      background: radial-gradient(closest-side, rgba(0,0,0,0) 60%, rgba(0,0,0,0.65) 100%);
-      opacity: 0.9;
+    .toast.show{
+      opacity:1;
+      transform: translateX(-50%) translateY(-2px);
     }
   </style>
 </head>
+
 <body>
-  <div class="hud">
-    <div class="topLeft">
-      <div class="title">SYSTEM / CYBER ROOM</div>
-      <div class="sub">
-        Status: <span style="color:rgba(0,255,224,0.95)">ONLINE</span><br/>
-        Mode: <span style="color:rgba(255,0,128,0.90)">NEON CORE</span><br/>
-        Controls: Drag = orbit, Scroll = zoom<br/>
-        Key: <span style="opacity:.9">B</span> Bloom, <span style="opacity:.9">G</span> Glitch, <span style="opacity:.9">R</span> Reset
+  <div class="fx"></div>
+
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1 class="glitch" data-text="SYSTEM NODE">SYSTEM NODE</h1>
+          <div class="tag">Backend-driven engineer · Security-aware delivery · Deterministic systems</div>
+        </div>
       </div>
-    </div>
 
-    <div class="topRight">
-      <div style="color:rgba(255,0,128,0.92); letter-spacing:2px;">BACKEND VIBE</div>
-      <div style="opacity:.9;">
-        .NET · Go · DevOps<br/>
-        Security-aware builds<br/>
-        Deterministic systems
+      <nav>
+        <a class="btn" href="#projects">Projects</a>
+        <a class="btn" href="#capabilities">Capabilities</a>
+        <a class="btn mag" href="#contact">Contact</a>
+        <button class="btn" id="copyEmailBtn" type="button">Copy Email</button>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="card">
+        <p class="headline">
+          <span class="accent">I build systems</span> that stay up when real traffic hits.
+          Frontend is UI. Backend is the product.
+        </p>
+        <p class="lead">
+          Odak: .NET / Go servisleri, Docker & CI/CD, gözlenebilirlik, güvenlik sertleştirme.
+          UI tarafında sade ama etkili arayüzler — “havalı” değil, “iş görür”.
+        </p>
+
+        <div class="kpis">
+          <div class="kpi">
+            <div class="v" id="kpiUptime">99.9%</div>
+            <div class="l">Ops mindset</div>
+          </div>
+          <div class="kpi">
+            <div class="v" id="kpiBuild">Green</div>
+            <div class="l">CI pipeline</div>
+          </div>
+          <div class="kpi">
+            <div class="v" id="kpiSec">Hardened</div>
+            <div class="l">Security posture</div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="bottomBar">
-      “Looks like frontend. Operates like infrastructure.” — SYS NODE
-    </div>
+      <div class="card">
+        <div class="terminal" id="terminal">
+          <div class="termTop">
+            <div class="dots" aria-hidden="true">
+              <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+            </div>
+            <div class="termTitle">/dev/tty · session: portfolio</div>
+          </div>
+          <div class="termBody" id="termBody" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
 
-    <div class="scanlines"></div>
-    <div class="vignette"></div>
+    <section class="section" id="projects">
+      <div class="sectionHeader">
+        <h2>PROJECTS</h2>
+        <div class="filters">
+          <input class="input" id="search" placeholder="Search projects (name, tags, desc)..." />
+          <div class="chip active" data-filter="all">All</div>
+          <div class="chip" data-filter="backend">Backend</div>
+          <div class="chip" data-filter="devops">DevOps</div>
+          <div class="chip" data-filter="tooling">Tooling</div>
+          <div class="chip" data-filter="frontend">Frontend</div>
+        </div>
+      </div>
+
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section class="section" id="capabilities">
+      <div class="sectionHeader">
+        <h2>CAPABILITIES</h2>
+      </div>
+
+      <div class="grid">
+        <div class="proj">
+          <div class="projTop">
+            <h3 class="projName">Architecture</h3>
+            <span class="badge">Clean / Pragmatic</span>
+          </div>
+          <p class="projDesc">
+            Vertical slice / Clean Architecture yaklaşımı; gereksiz katman şişirmem. Ölçeklenebilir ama bakımı kolay tasarım.
+          </p>
+          <div class="tags">
+            <span class="tag">CQRS</span><span class="tag">MediatR</span><span class="tag">Modular</span>
+          </div>
+        </div>
+
+        <div class="proj">
+          <div class="projTop">
+            <h3 class="projName">Delivery</h3>
+            <span class="badge">CI/CD</span>
+          </div>
+          <p class="projDesc">
+            Pipeline’ı “çalışıyor” diye bırakmam: cache, artifact, versioning, secrets, rollback. Üretim gerçekleri.
+          </p>
+          <div class="tags">
+            <span class="tag">GitHub Actions</span><span class="tag">Docker</span><span class="tag">Deploy</span>
+          </div>
+        </div>
+
+        <div class="proj">
+          <div class="projTop">
+            <h3 class="projName">Security</h3>
+            <span class="badge">Hardening</span>
+          </div>
+          <p class="projDesc">
+            Varsayılan güvenli değildir. Public yüzeyleri daraltır, gözlemler, loglar, rate-limit ve izolasyon uygularım.
+          </p>
+          <div class="tags">
+            <span class="tag">Least privilege</span><span class="tag">Headers</span><span class="tag">Isolation</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="sectionHeader">
+        <h2>CONTACT</h2>
+      </div>
+
+      <footer>
+        <div class="left">
+          <div><span style="color:var(--cyan)">Email</span>: <span id="emailText">you@example.com</span></div>
+          <div class="muted">GitHub Pages ready · Single file · Zero dependencies</div>
+        </div>
+        <div class="right">
+          <a class="a" href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+          <a class="a" href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a class="a" href="#projects">Back to Projects</a>
+        </div>
+      </footer>
+    </section>
   </div>
 
-  <script type="module">
-    import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
-    import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
-    import { EffectComposer } from "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js";
-    import { RenderPass } from "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/RenderPass.js";
-    import { UnrealBloomPass } from "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js";
-    import { GlitchPass } from "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/GlitchPass.js";
+  <div class="toast" id="toast">Copied.</div>
 
-    // --- Core ---
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x06080c);
-    scene.fog = new THREE.Fog(0x06080c, 6, 40);
-
-    const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 150);
-    camera.position.set(0, 2.2, 9);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-    renderer.setSize(innerWidth, innerHeight);
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
-    document.body.appendChild(renderer.domElement);
-
-    // Controls (oda hissi için orbit)
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.06;
-    controls.target.set(0, 1.3, 0);
-    controls.maxPolarAngle = Math.PI * 0.52;
-    controls.minDistance = 4.5;
-    controls.maxDistance = 16;
-
-    // --- Post ---
-    const composer = new EffectComposer(renderer);
-    const renderPass = new RenderPass(scene, camera);
-    composer.addPass(renderPass);
-
-    const bloomPass = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 1.25, 0.55, 0.16);
-    composer.addPass(bloomPass);
-
-    const glitchPass = new GlitchPass();
-    glitchPass.enabled = false;
-    composer.addPass(glitchPass);
-
-    let bloomOn = true;
-    let glitchOn = false;
-
-    // --- Lights ---
-    const ambient = new THREE.AmbientLight(0x00ffe0, 0.09);
-    scene.add(ambient);
-
-    const keyCyan = new THREE.PointLight(0x00ffe0, 2.2, 30, 2);
-    keyCyan.position.set(4, 4, 6);
-    scene.add(keyCyan);
-
-    const keyMagenta = new THREE.PointLight(0xff0080, 1.8, 28, 2);
-    keyMagenta.position.set(-4, 3, -2);
-    scene.add(keyMagenta);
-
-    const rim = new THREE.SpotLight(0x66ffcc, 1.6, 45, Math.PI * 0.22, 0.6, 1.2);
-    rim.position.set(0, 10, 0);
-    rim.target.position.set(0, 1, 0);
-    scene.add(rim, rim.target);
-
-    // --- Materials ---
-    const matWall = new THREE.MeshStandardMaterial({
-      color: 0x0a0f14,
-      metalness: 0.6,
-      roughness: 0.35,
-      emissive: 0x001d1a,
-      emissiveIntensity: 0.15
-    });
-
-    const matFloor = new THREE.MeshStandardMaterial({
-      color: 0x070a0f,
-      metalness: 0.55,
-      roughness: 0.25,
-      emissive: 0x001411,
-      emissiveIntensity: 0.10
-    });
-
-    const matNeonCyan = new THREE.MeshStandardMaterial({
-      color: 0x00ffe0,
-      emissive: 0x00ffe0,
-      emissiveIntensity: 1.25,
-      metalness: 0.2,
-      roughness: 0.2
-    });
-
-    const matNeonMagenta = new THREE.MeshStandardMaterial({
-      color: 0xff0080,
-      emissive: 0xff0080,
-      emissiveIntensity: 1.10,
-      metalness: 0.2,
-      roughness: 0.25
-    });
-
-    // --- Room / Corridor geometry ---
-    const room = new THREE.Group();
-    scene.add(room);
-
-    // Floor
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(24, 48, 1, 1), matFloor);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = 0;
-    floor.position.z = -8;
-    room.add(floor);
-
-    // Walls
-    const wallL = new THREE.Mesh(new THREE.BoxGeometry(0.6, 6, 48), matWall);
-    wallL.position.set(-6.6, 3, -8);
-    room.add(wallL);
-
-    const wallR = new THREE.Mesh(new THREE.BoxGeometry(0.6, 6, 48), matWall);
-    wallR.position.set(6.6, 3, -8);
-    room.add(wallR);
-
-    // Ceiling
-    const ceil = new THREE.Mesh(new THREE.BoxGeometry(14, 0.6, 48), matWall);
-    ceil.position.set(0, 6.3, -8);
-    room.add(ceil);
-
-    // Back frame / portal
-    const portalFrame = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.12, 18, 80), matNeonCyan);
-    portalFrame.position.set(0, 2.3, -26);
-    room.add(portalFrame);
-
-    const portalCore = new THREE.Mesh(new THREE.CircleGeometry(1.22, 80), new THREE.MeshStandardMaterial({
-      color: 0x00100d,
-      emissive: 0x00ffe0,
-      emissiveIntensity: 0.35,
-      metalness: 0.1,
-      roughness: 0.6
-    }));
-    portalCore.position.set(0, 2.3, -26.02);
-    room.add(portalCore);
-
-    // Grid lines (neon strips)
-    const strips = new THREE.Group();
-    room.add(strips);
-
-    function addStrip(x, y, z, len, colorMat) {
-      const strip = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, len), colorMat);
-      strip.position.set(x, y, z);
-      strips.add(strip);
-      return strip;
-    }
-
-    // floor strips down corridor
-    const stripA = addStrip(-2.2, 0.04, -8, 42, matNeonCyan);
-    const stripB = addStrip( 2.2, 0.04, -8, 42, matNeonMagenta);
-
-    // wall strips
-    const stripC = new THREE.Mesh(new THREE.BoxGeometry(0.08, 3.0, 0.08), matNeonCyan);
-    stripC.position.set(-6.35, 3.0, -2);
-    room.add(stripC);
-
-    const stripD = new THREE.Mesh(new THREE.BoxGeometry(0.08, 3.0, 0.08), matNeonMagenta);
-    stripD.position.set(6.35, 3.0, -14);
-    room.add(stripD);
-
-    // Holo panels (floating screens)
-    const panels = new THREE.Group();
-    room.add(panels);
-
-    function holoPanel(x, y, z, w, h, mat, rotY=0) {
-      const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1), new THREE.MeshStandardMaterial({
-        color: 0x041014,
-        emissive: mat.emissive ? mat.emissive : 0x00ffe0,
-        emissiveIntensity: 0.9,
-        metalness: 0.1,
-        roughness: 0.35,
-        transparent: true,
-        opacity: 0.85
-      }));
-      p.position.set(x, y, z);
-      p.rotation.y = rotY;
-      panels.add(p);
-      return p;
-    }
-
-    const panel1 = holoPanel(-3.8, 2.4, -6, 2.6, 1.2, matNeonCyan, Math.PI*0.10);
-    const panel2 = holoPanel( 3.8, 2.1, -10, 2.2, 1.0, matNeonMagenta, -Math.PI*0.10);
-    const panel3 = holoPanel( 0.0, 3.6, -18, 3.2, 1.5, matNeonCyan, 0);
-
-    // Floating “core”
-    const coreGroup = new THREE.Group();
-    coreGroup.position.set(0, 1.6, -6);
-    room.add(coreGroup);
-
-    const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.85, 1), new THREE.MeshStandardMaterial({
-      color: 0x001016,
-      emissive: 0x00ffe0,
-      emissiveIntensity: 0.65,
-      metalness: 0.85,
-      roughness: 0.18
-    }));
-    coreGroup.add(core);
-
-    const coreRing = new THREE.Mesh(new THREE.TorusGeometry(1.35, 0.05, 16, 120), matNeonMagenta);
-    coreRing.rotation.x = Math.PI / 2;
-    coreGroup.add(coreRing);
-
-    // “Data particles”
-    const particlesCount = 1800;
-    const positions = new Float32Array(particlesCount * 3);
-    for (let i = 0; i < particlesCount; i++) {
-      const x = (Math.random() - 0.5) * 18;
-      const y = Math.random() * 7;
-      const z = - (Math.random() * 40);
-      positions[i*3+0] = x;
-      positions[i*3+1] = y;
-      positions[i*3+2] = z - 2;
-    }
-    const pGeo = new THREE.BufferGeometry();
-    pGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-
-    const pMat = new THREE.PointsMaterial({
-      size: 0.02,
-      color: 0x66ffcc,
-      transparent: true,
-      opacity: 0.75
-    });
-
-    const points = new THREE.Points(pGeo, pMat);
-    room.add(points);
-
-    // --- Animation ---
-    const clock = new THREE.Clock();
-
-    function animate() {
-      requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
-
-      controls.update();
-
-      // neon pulse
-      const pulse = 0.75 + Math.sin(t * 2.2) * 0.25;
-      matNeonCyan.emissiveIntensity = 1.05 * pulse;
-      matNeonMagenta.emissiveIntensity = 0.95 * (0.85 + Math.cos(t * 1.9) * 0.22);
-
-      // core motion
-      coreGroup.position.y = 1.55 + Math.sin(t * 1.2) * 0.12;
-      core.rotation.y += 0.006;
-      core.rotation.x += 0.0025;
-      coreRing.rotation.z += 0.008;
-
-      // panels shimmer
-      panel1.position.y = 2.4 + Math.sin(t * 1.5) * 0.05;
-      panel2.position.y = 2.1 + Math.cos(t * 1.3) * 0.05;
-      panel3.material.opacity = 0.78 + Math.sin(t * 2.0) * 0.06;
-
-      // data drift
-      points.rotation.y = Math.sin(t * 0.12) * 0.08;
-
-      // portal throb
-      portalFrame.scale.setScalar(1.0 + Math.sin(t * 2.0) * 0.02);
-
-      // render
-      if (bloomOn) composer.render();
-      else renderer.render(scene, camera);
-    }
-
-    animate();
-
-    // --- Resize ---
-    addEventListener("resize", () => {
-      camera.aspect = innerWidth / innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(innerWidth, innerHeight);
-      composer.setSize(innerWidth, innerHeight);
-    });
-
-    // --- Keybinds ---
-    addEventListener("keydown", (e) => {
-      const k = e.key.toLowerCase();
-      if (k === "b") {
-        bloomOn = !bloomOn;
-        bloomPass.enabled = bloomOn;
+  <script>
+    // ======== Data (edit here) ========
+    const PROFILE = {
+      email: "efendimiz@domain.com",
+      links: {
+        github: "https://github.com/yourname",
+        linkedin: "https://www.linkedin.com/in/yourname/"
       }
-      if (k === "g") {
-        glitchOn = !glitchOn;
-        glitchPass.enabled = glitchOn;
+    };
+
+    const PROJECTS = [
+      {
+        name: "HajiLang",
+        lane: "tooling",
+        badge: "Language",
+        desc: "Go tabanlı interpreter/REPL. Keyword set, CLI, packaging. Tooling disiplinini gösterir.",
+        tags: ["Go", "Interpreter", "CLI", "Packaging"],
+        repo: "https://github.com/yourname/hajilang",
+        live: ""
+      },
+      {
+        name: "RealtimeChat (.NET)",
+        lane: "backend",
+        badge: "API",
+        desc: "Realtime hub + auth + repository katmanı. Prod’a taşınabilir iskelet.",
+        tags: [".NET", "SignalR", "Auth", "API"],
+        repo: "https://github.com/yourname/realtimechat",
+        live: ""
+      },
+      {
+        name: "Calendar-for-Org",
+        lane: "frontend",
+        badge: "App",
+        desc: "React/Next tabanlı organizasyon takvimi. UI minimal, işlev odaklı.",
+        tags: ["React", "Next.js", "Prisma", "UX"],
+        repo: "https://github.com/yourname/calendar-for-org",
+        live: ""
+      },
+      {
+        name: "OCI Hardening Playbook",
+        lane: "devops",
+        badge: "Ops",
+        desc: "Public yüzey daraltma, Docker izolasyon, log/metric, incident sonrası iyileştirme adımları.",
+        tags: ["OCI", "Docker", "Security", "Observability"],
+        repo: "https://github.com/yourname/oci-hardening",
+        live: ""
+      },
+      {
+        name: "Expense-Track",
+        lane: "frontend",
+        badge: "Tool",
+        desc: "Kişisel finans takip. Basit arayüz, gerçek veri akışı, export yaklaşımı.",
+        tags: ["React", "Data", "Export"],
+        repo: "https://github.com/yourname/expense-track",
+        live: ""
+      },
+      {
+        name: "CI Pipeline Template",
+        lane: "devops",
+        badge: "Template",
+        desc: "Reusable GitHub Actions şablonu: build, test, image push, release tagging.",
+        tags: ["GitHub Actions", "Docker", "Release"],
+        repo: "https://github.com/yourname/ci-template",
+        live: ""
       }
-      if (k === "r") {
-        camera.position.set(0, 2.2, 9);
-        controls.target.set(0, 1.3, 0);
-        controls.update();
-      }
+    ];
+
+    // ======== Render ========
+    const grid = document.getElementById("grid");
+    const search = document.getElementById("search");
+    const chips = Array.from(document.querySelectorAll(".chip"));
+    const toast = document.getElementById("toast");
+
+    document.getElementById("emailText").textContent = PROFILE.email;
+
+    // Update external links in footer (optional)
+    const footerLinks = document.querySelectorAll("footer .a");
+    // (Not rewriting here; user can set actual URLs above.)
+
+    let activeFilter = "all";
+
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 950);
+    }
+
+    function cardTemplate(p){
+      const tags = p.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("");
+      const links = `
+        <div class="links">
+          ${p.repo ? `<a class="a" href="${p.repo}" target="_blank" rel="noreferrer">Repo</a>` : ""}
+          ${p.live ? `<a class="a" href="${p.live}" target="_blank" rel="noreferrer">Live</a>` : ""}
+          <a class="a" href="#" data-copy="${escapeAttr(p.name)}">Copy name</a>
+        </div>
+      `;
+      return `
+        <div class="proj" data-lane="${escapeAttr(p.lane)}">
+          <div class="projTop">
+            <h3 class="projName">${escapeHtml(p.name)}</h3>
+            <span class="badge">${escapeHtml(p.badge)}</span>
+          </div>
+          <p class="projDesc">${escapeHtml(p.desc)}</p>
+          <div class="tags">${tags}</div>
+          ${links}
+        </div>
+      `;
+    }
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function escapeAttr(s){
+      return escapeHtml(s).replaceAll('"',"&quot;");
+    }
+
+    function render(){
+      const q = (search.value || "").trim().toLowerCase();
+      const filtered = PROJECTS.filter(p => {
+        const laneOk = (activeFilter === "all") ? true : p.lane === activeFilter;
+        const hay = `${p.name} ${p.desc} ${p.tags.join(" ")}`.toLowerCase();
+        const qOk = q ? hay.includes(q) : true;
+        return laneOk && qOk;
+      });
+
+      grid.innerHTML = filtered.map(cardTemplate).join("") || `
+        <div class="proj">
+          <div class="projTop">
+            <h3 class="projName">No match</h3>
+            <span class="badge">Filter</span>
+          </div>
+          <p class="projDesc">Arama/filtre kriterlerine uyan proje yok. Kriteri daraltma.</p>
+          <div class="tags"><span class="tag">Hint</span><span class="tag">Try: backend</span></div>
+        </div>
+      `;
+
+      // bind copy
+      grid.querySelectorAll("[data-copy]").forEach(a => {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          const text = a.getAttribute("data-copy");
+          navigator.clipboard?.writeText(text || "").then(() => showToast("Copied project name."));
+        });
+      });
+    }
+
+    chips.forEach(c => {
+      c.addEventListener("click", () => {
+        chips.forEach(x => x.classList.remove("active"));
+        c.classList.add("active");
+        activeFilter = c.dataset.filter || "all";
+        render();
+      });
     });
+
+    search.addEventListener("input", render);
+
+    // Copy email
+    document.getElementById("copyEmailBtn").addEventListener("click", () => {
+      navigator.clipboard?.writeText(PROFILE.email).then(() => showToast("Copied email."));
+    });
+
+    // ======== Terminal script ========
+    const termBody = document.getElementById("termBody");
+    const lines = [
+      { t: "prompt", s: "sys@node:~$ " },
+      { t: "cmd", s: "whoami" },
+      { t: "out", s: "Backend-driven engineer. Frontend is a tool, not the product." },
+
+      { t: "prompt", s: "\nsys@node:~$ " },
+      { t: "cmd", s: "stack --primary" },
+      { t: "out", s: ".NET · Go · Docker · CI/CD · Observability · Security hardening" },
+
+      { t: "prompt", s: "\nsys@node:~$ " },
+      { t: "cmd", s: "principles" },
+      { t: "out", s: "1) ship fast, 2) monitor always, 3) reduce attack surface, 4) keep it boring in prod" },
+
+      { t: "prompt", s: "\nsys@node:~$ " },
+      { t: "cmd", s: "note" },
+      { t: "out", s: "If it looks cool but breaks under load — it’s a liability." },
+
+      { t: "prompt", s: "\nsys@node:~$ " },
+      { t: "cmd", s: "ls projects/" },
+      { t: "out", s: "hajilang  realtimechat  calendar-for-org  oci-hardening  expense-track  ci-template" },
+    ];
+
+    function typeLine(el, text, speed=12){
+      return new Promise(resolve => {
+        let i=0;
+        const id = setInterval(() => {
+          el.textContent += text[i++] || "";
+          el.scrollTop = el.scrollHeight;
+          if(i >= text.length){ clearInterval(id); resolve(); }
+        }, speed);
+      });
+    }
+
+    async function runTerminal(){
+      termBody.innerHTML = "";
+      for(const L of lines){
+        const span = document.createElement("span");
+        span.className = L.t;
+        termBody.appendChild(span);
+        await typeLine(span, L.s, L.t === "cmd" ? 10 : 6);
+        if(L.t === "out") {
+          const br = document.createElement("br");
+          termBody.appendChild(br);
+        }
+      }
+    }
+
+    // KPI pulse (fake but tasteful)
+    const kpiUptime = document.getElementById("kpiUptime");
+    const kpiBuild = document.getElementById("kpiBuild");
+    const kpiSec = document.getElementById("kpiSec");
+
+    let tick = 0;
+    setInterval(() => {
+      tick++;
+      const up = 99.9 + (Math.sin(tick/4) * 0.05);
+      kpiUptime.textContent = up.toFixed(2) + "%";
+      kpiBuild.textContent = (tick % 8 === 0) ? "Deploy" : "Green";
+      kpiSec.textContent = (tick % 11 === 0) ? "Audit" : "Hardened";
+    }, 900);
+
+    // init
+    render();
+    runTerminal();
   </script>
 </body>
 </html>
