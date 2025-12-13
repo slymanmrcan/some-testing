@@ -1,1 +1,43 @@
 
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #05070b;
+  overflow: hidden;
+  font-family: monospace;
+}
+
+#hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  color: #00ffe0;
+}
+
+#title {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  letter-spacing: 4px;
+  font-size: 12px;
+}
+
+#info {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+#project {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  width: 260px;
+  padding: 12px;
+  border: 1px solid #00ffe055;
+  background: #020b0fcc;
+  display: none;
+}
