@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF Kelime Listesi - Hızlı Referans</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+            line-height: 1.4;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #161b22;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+        }
+        
+        h1 {
+            color: #58a6ff;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+        
+        .search {
+            margin-bottom: 20px;
+        }
+        
+        .search input {
+            width: 100%;
+            padding: 12px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .category {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .category-header {
+            background: #21262d;
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            color: #58a6ff;
+        }
+        
+        .category-header:hover {
+            background: #30363d;
+        }
+        
+        .category-content {
+            padding: 15px;
+        }
+        
+        .word-item {
+            display: grid;
+            grid-template-columns: 200px 250px 1fr;
+            gap: 15px;
+            padding: 8px 0;
+            border-bottom: 1px solid #21262d;
+            font-size: 13px;
+        }
+        
+        .word-item:last-child {
+            border-bottom: none;
+        }
+        
+        .word {
+            color: #79c0ff;
+            font-weight: bold;
+        }
+        
+        .meaning {
+            color: #7ee787;
+        }
+        
+        .example {
+            color: #8b949e;
+            font-style: italic;
+        }
+        
+        .collapse-btn {
+            color: #8b949e;
+            font-size: 18px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .tag {
+            display: inline-block;
+            background: #1f6feb;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-left: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .word-item {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔐 CTF & Bug Bounty Kelime Listesi</h1>
+        <p>Hızlı referans - JSON tabanlı</p>
+    </div>
+    
+    <div class="search">
+        <input type="text" id="searchInput" placeholder="🔍 Ara (örn: vulnerability, sql, bypass)...">
+    </div>
+    
+    <div id="categories"></div>
+
+    <script>
+        const words = {
+            "Temel Güvenlik": [
+                { word: "vulnerability", meaning: "güvenlik açığı, zafiyet", example: "found a critical vulnerability" },
+                { word: "exploit", meaning: "istismar etmek, açık kullanmak", example: "exploit this bug to gain access" },
+                { word: "payload", meaning: "zararlı yük, saldırı verisi", example: "inject the XSS payload" },
+                { word: "bypass", meaning: "atlatmak (güvenlik)", example: "bypass the WAF protection" },
+                { word: "enumerate", meaning: "listelemek, keşfetmek", example: "enumerate all subdomains" },
+                { word: "leverage", meaning: "kullanmak, avantaja çevirmek", example: "leverage this misconfiguration" },
+                { word: "disclose", meaning: "açığa çıkarmak, ifşa etmek", example: "disclose sensitive information" },
+                { word: "mitigate", meaning: "azaltmak, önlem almak", example: "mitigate the security risk" },
+                { word: "patch", meaning: "yama yapmak, düzeltmek", example: "patch the vulnerability immediately" },
+                { word: "vulnerable", meaning: "savunmasız, açık", example: "the system is vulnerable to attacks" }
+            ],
+            "Web Saldırıları": [
+                { word: "injection", meaning: "enjeksiyon (SQL, command vb.)", example: "SQL injection in login form" },
+                { word: "XSS", meaning: "cross-site scripting", example: "reflected XSS vulnerability" },
+                { word: "CSRF", meaning: "cross-site request forgery", example: "CSRF token is missing" },
+                { word: "SSRF", meaning: "server-side request forgery", example: "exploit SSRF to access internal network" },
+                { word: "IDOR", meaning: "insecure direct object reference", example: "IDOR in user profile endpoint" },
+                { word: "XXE", meaning: "XML external entity", example: "XXE attack via file upload" },
+                { word: "RCE", meaning: "remote code execution", example: "achieved RCE on the server" },
+                { word: "LFI", meaning: "local file inclusion", example: "LFI to read /etc/passwd" },
+                { word: "RFI", meaning: "remote file inclusion", example: "RFI vulnerability in parameter" },
+                { word: "chaining", meaning: "zincirleme saldırı", example: "chaining SSRF with XXE" },
+                { word: "sanitize", meaning: "temizlemek, filtrelemek", example: "input is not properly sanitized" },
+                { word: "validate", meaning: "doğrulamak, kontrol etmek", example: "validate user input" }
+            ],
+            "Yetki & Erişim": [
+                { word: "privilege escalation", meaning: "yetki yükseltme", example: "local privilege escalation" },
+                { word: "backdoor", meaning: "arka kapı", example: "plant a backdoor for persistence" },
+                { word: "credential", meaning: "kimlik bilgisi", example: "found hardcoded credentials" },
+                { word: "token", meaning: "jeton, kimlik anahtarı", example: "JWT token is not validated" },
+                { word: "session", meaning: "oturum", example: "hijack the user session" },
+                { word: "impersonate", meaning: "kimliğine bürünmek", example: "impersonate the admin user" },
+                { word: "authenticate", meaning: "kimlik doğrulamak", example: "bypass authentication" },
+                { word: "authorize", meaning: "yetkilendirmek", example: "authorization check is missing" },
+                { word: "access control", meaning: "erişim kontrolü", example: "broken access control" }
+            ],
+            "Teknik Terimler": [
+                { word: "hash", meaning: "özet, şifreli veri", example: "crack the password hash" },
+                { word: "crack", meaning: "kırmak (şifre, hash)", example: "crack using hashcat" },
+                { word: "dump", meaning: "dökmek, çıkartmak", example: "dump the database contents" },
+                { word: "parse", meaning: "ayrıştırmak, çözümlemek", example: "parse the JSON response" },
+                { word: "encode", meaning: "kodlamak", example: "encode in base64" },
+                { word: "decode", meaning: "kod çözmek", example: "decode the hex string" },
+                { word: "obfuscate", meaning: "karmaşıklaştırmak", example: "obfuscated JavaScript code" },
+                { word: "deobfuscate", meaning: "karmaşıklığı çözmek", example: "deobfuscate the payload" },
+                { word: "fuzzing", meaning: "otomatik test, rastgele veri", example: "fuzzing the API endpoints" },
+                { word: "trigger", meaning: "tetiklemek", example: "trigger the buffer overflow" },
+                { word: "leak", meaning: "sızdırmak, açığa çıkmak", example: "memory leak vulnerability" },
+                { word: "overflow", meaning: "taşma", example: "buffer overflow exploit" }
+            ],
+            "CTF Jargonu": [
+                { word: "flag", meaning: "bayrak (hedef)", example: "captured the flag: CTF{...}" },
+                { word: "recon", meaning: "keşif, bilgi toplama", example: "start with recon phase" },
+                { word: "foothold", meaning: "ilk giriş noktası", example: "gain a foothold on the system" },
+                { word: "pivot", meaning: "geçiş yapmak (sistemler arası)", example: "pivot to internal network" },
+                { word: "pwn", meaning: "ele geçirmek, hackleme", example: "pwned the box" },
+                { word: "reverse shell", meaning: "ters shell", example: "get a reverse shell" },
+                { word: "bind shell", meaning: "bağlı shell", example: "create a bind shell" },
+                { word: "brute force", meaning: "kaba kuvvet saldırısı", example: "brute force the password" },
+                { word: "writeup", meaning: "çözüm raporu", example: "read the CTF writeup" },
+                { word: "challenge", meaning: "görev, soru", example: "solve the crypto challenge" },
+                { word: "hint", meaning: "ipucu", example: "check the hint file" }
+            ],
+            "Network & Sistem": [
+                { word: "scan", meaning: "taramak", example: "scan for open ports" },
+                { word: "probe", meaning: "yoklamak, araştırmak", example: "probe the network" },
+                { word: "sniff", meaning: "paket dinlemek", example: "sniff network traffic" },
+                { word: "intercept", meaning: "durdurup incelemek", example: "intercept HTTP requests" },
+                { word: "packet", meaning: "paket (veri)", example: "analyze network packets" },
+                { word: "port", meaning: "port, bağlantı noktası", example: "port 22 is open" },
+                { word: "banner", meaning: "servis bilgisi", example: "grab the service banner" },
+                { word: "fingerprint", meaning: "parmak izi, tanımlama", example: "fingerprint the web server" },
+                { word: "tunnel", meaning: "tünel oluşturmak", example: "SSH tunnel for pivoting" }
+            ],
+            "Yaygın Fiiller": [
+                { word: "retrieve", meaning: "almak, çekmek", example: "retrieve user data" },
+                { word: "inject", meaning: "enjekte etmek, eklemek", example: "inject malicious code" },
+                { word: "execute", meaning: "çalıştırmak", example: "execute arbitrary commands" },
+                { word: "modify", meaning: "değiştirmek", example: "modify the request" },
+                { word: "intercept", meaning: "yakalamak, kesmek", example: "intercept the traffic" },
+                { word: "forge", meaning: "sahte oluşturmak", example: "forge a valid token" },
+                { word: "spoof", meaning: "taklit etmek, yanıltmak", example: "spoof the IP address" },
+                { word: "escalate", meaning: "yükseltmek", example: "escalate privileges" },
+                { word: "traverse", meaning: "geçmek, dolaşmak", example: "directory traversal attack" },
+                { word: "exfiltrate", meaning: "dışarı sızdırmak", example: "exfiltrate sensitive data" }
+            ],
+            "Reverse Engineering": [
+                { word: "disassemble", meaning: "ayrıştırmak, tersine mühendislik", example: "disassemble the binary" },
+                { word: "decompile", meaning: "kaynak koda çevirmek", example: "decompile the Java class" },
+                { word: "debug", meaning: "hata ayıklamak", example: "debug the application" },
+                { word: "breakpoint", meaning: "kesme noktası", example: "set a breakpoint" },
+                { word: "assembly", meaning: "assembly dili", example: "analyze assembly code" },
+                { word: "binary", meaning: "ikili dosya, çalıştırılabilir", example: "analyze the binary" },
+                { word: "opcodes", meaning: "işlem kodları", example: "decode the opcodes" },
+                { word: "gadget", meaning: "kod parçacığı (ROP)", example: "find ROP gadgets" }
+            ],
+            "Cryptography": [
+                { word: "cipher", meaning: "şifre algoritması", example: "weak cipher detected" },
+                { word: "plaintext", meaning: "açık metin", example: "convert to plaintext" },
+                { word: "ciphertext", meaning: "şifreli metin", example: "decode the ciphertext" },
+                { word: "encrypt", meaning: "şifrelemek", example: "encrypt the data" },
+                { word: "decrypt", meaning: "şifre çözmek", example: "decrypt the message" },
+                { word: "key", meaning: "anahtar", example: "found the encryption key" },
+                { word: "salt", meaning: "tuz (hash için)", example: "password salt is missing" },
+                { word: "IV", meaning: "initialization vector", example: "reused IV vulnerability" },
+                { word: "padding", meaning: "dolgu", example: "padding oracle attack" }
+            ],
+            "Bug Bounty Terimleri": [
+                { word: "severity", meaning: "ciddiyet, önem derecesi", example: "critical severity bug" },
+                { word: "impact", meaning: "etki, sonuç", example: "high impact vulnerability" },
+                { word: "scope", meaning: "kapsam", example: "out of scope domain" },
+                { word: "duplicate", meaning: "tekrar, kopya", example: "marked as duplicate" },
+                { word: "bounty", meaning: "ödül", example: "received $500 bounty" },
+                { word: "report", meaning: "rapor etmek", example: "report the vulnerability" },
+                { word: "triage", meaning: "sınıflandırma, değerlendirme", example: "bug in triage" },
+                { word: "disclosure", meaning: "açıklama, ifşa", example: "responsible disclosure" },
+                { word: "POC", meaning: "proof of concept", example: "provide a working POC" },
+                { word: "reproduce", meaning: "tekrar üretmek, göstermek", example: "steps to reproduce" }
+            ]
+        };
+
+        function renderCategories() {
+            const container = document.getElementById('categories');
+            container.innerHTML = '';
+            
+            Object.keys(words).forEach((category, index) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                
+                const header = document.createElement('div');
+                header.className = 'category-header';
+                header.innerHTML = `
+                    <span>${category} <span class="tag">${words[category].length}</span></span>
+                    <span class="collapse-btn">▼</span>
+                `;
+                
+                const content = document.createElement('div');
+                content.className = 'category-content';
+                
+                words[category].forEach(item => {
+                    const wordDiv = document.createElement('div');
+                    wordDiv.className = 'word-item';
+                    wordDiv.innerHTML = `
+                        <div class="word">${item.word}</div>
+                        <div class="meaning">${item.meaning}</div>
+                        <div class="example">${item.example}</div>
+                    `;
+                    content.appendChild(wordDiv);
+                });
+                
+                header.addEventListener('click', () => {
+                    content.classList.toggle('hidden');
+                    const btn = header.querySelector('.collapse-btn');
+                    btn.textContent = content.classList.contains('hidden') ? '▶' : '▼';
+                });
+                
+                categoryDiv.appendChild(header);
+                categoryDiv.appendChild(content);
+                container.appendChild(categoryDiv);
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const search = e.target.value.toLowerCase();
+            const items = document.querySelectorAll('.word-item');
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(search)) {
+                    item.style.display = 'grid';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Kategorileri göster/gizle
+            document.querySelectorAll('.category').forEach(cat => {
+                const visibleItems = Array.from(cat.querySelectorAll('.word-item'))
+                    .filter(item => item.style.display !== 'none');
+                
+                if (visibleItems.length > 0) {
+                    cat.style.display = 'block';
+                    cat.querySelector('.category-content').classList.remove('hidden');
+                    cat.querySelector('.collapse-btn').textContent = '▼';
+                } else {
+                    cat.style.display = 'none';
+                }
+            });
+        });
+
+        renderCategories();
+    </script>
+</body>
+</html>
