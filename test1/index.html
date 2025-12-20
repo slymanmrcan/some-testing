@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ResearchMind Canvas</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#8c25f4",
+              "primary-dark": "#6b1cb0",
+              "background-light": "#f7f5f8",
+              "background-dark": "#141118",
+              "surface-dark": "#211b27",
+              "surface-border": "#302839",
+              "text-secondary": "#ab9cba",
+              "status-support": "#10b981", // Emerald 500
+              "status-oppose": "#f43f5e",  // Rose 500
+              "status-neutral": "#0ea5e9", // Sky 500
+            },
+            fontFamily: {
+              "display": ["Space Grotesk", "sans-serif"]
+            },
+            backgroundImage: {
+                'grid-pattern': "radial-gradient(#302839 1px, transparent 1px)"
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: "Space Grotesk", sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-hidden h-screen flex flex-col font-display">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-surface-border bg-background-dark px-6 py-3 shrink-0 z-50">
+<div class="flex items-center gap-4 text-white">
+<div class="size-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">hub</span>
+</div>
+<h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em]">ResearchMind</h2>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<div class="hidden md:flex gap-2">
+<button class="flex items-center justify-center rounded-lg h-9 w-9 bg-surface-border text-white hover:bg-surface-border/80 transition-colors">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-9 w-9 bg-surface-border text-white hover:bg-surface-border/80 transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-9 ring-2 ring-surface-border" data-alt="User profile avatar showing a generic silhouette or face" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAXuIOmnbkRboRX0vR9XCiMmU5NHb-WPq82ai5Mqejf4eZNvNBhlot3psVX9AMObO9Vo7LeBkDo69bwG38mE5kdT3scuvJ3RNz9_sXOS3KkKINYf-ppe1gTAq2ojx--WaQ0vekDNvoDmdKG2m2pKsrvmsH-yV9jUbED8TirhDNDscH7EtPxeH-hdUYegabBPKYjlQFM5wSv_4n638VgdSN9nfazVRj5w0xfp6Gp_cU1i9Bh2-VWHXv9fSlw39dbShg-068tjSiEdMw");'>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<div class="flex flex-1 overflow-hidden relative">
+<!-- Left Sidebar (Search & Filter) -->
+<aside class="w-80 bg-background-dark border-r border-surface-border flex flex-col z-40 shadow-xl shrink-0">
+<div class="p-4 border-b border-surface-border">
+<div class="flex w-full items-stretch rounded-lg bg-surface-dark border border-surface-border focus-within:border-primary transition-colors">
+<div class="text-text-secondary flex items-center justify-center pl-3">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="w-full bg-transparent border-none text-white focus:ring-0 placeholder:text-text-secondary h-10 text-sm" placeholder="Search nodes..."/>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-4 overflow-y-auto hide-scrollbar flex-1">
+<!-- Filters -->
+<div>
+<h3 class="text-xs font-bold text-text-secondary uppercase tracking-wider mb-3">Relationship Types</h3>
+<div class="flex flex-wrap gap-2">
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-status-support/10 border border-status-support/20 hover:bg-status-support/20 transition-colors group">
+<span class="w-2 h-2 rounded-full bg-status-support shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+<span class="text-xs font-medium text-status-support">Support</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-status-oppose/10 border border-status-oppose/20 hover:bg-status-oppose/20 transition-colors group">
+<span class="w-2 h-2 rounded-full bg-status-oppose shadow-[0_0_8px_rgba(244,63,94,0.5)]"></span>
+<span class="text-xs font-medium text-status-oppose">Oppose</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-status-neutral/10 border border-status-neutral/20 hover:bg-status-neutral/20 transition-colors group">
+<span class="w-2 h-2 rounded-full bg-status-neutral shadow-[0_0_8px_rgba(14,165,233,0.5)]"></span>
+<span class="text-xs font-medium text-status-neutral">Neutral</span>
+</button>
+</div>
+</div>
+<!-- Recent Nodes List -->
+<div>
+<h3 class="text-xs font-bold text-text-secondary uppercase tracking-wider mb-3">Recently Added</h3>
+<div class="flex flex-col gap-3">
+<!-- Mini Card 1 -->
+<div class="flex gap-3 p-2 rounded-lg hover:bg-surface-dark transition-colors cursor-pointer group border border-transparent hover:border-surface-border">
+<div class="w-10 h-14 bg-cover bg-center rounded flex-shrink-0" data-alt="Book cover for The Innovator's Dilemma" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5NZ_RbDMnJjikVMu1HGoq0SpboT1NI0_qYCafWu-8nF46hI7ZmDIEaEB4Wv8FApZUQP6jM1ae-2565EKF8wp4dzPtcSsRZ2VctEWzOvDgRSDaKTbuVaQxV48F3miijEsRKjKWtoxZYX1FsKe0w1_b2M2Tz7_1zf0WWn7sis9Nys_RVVHmRNQupTEPxHHGhlB62rSuN5LyKoYV5D01zQmbYFmCiq5QXNDhustvMgspORSDDJ7JptlMVV26OEfMpWZry85UdPgbYh8");'></div>
+<div class="flex flex-col justify-center min-w-0">
+<p class="text-sm font-bold text-white truncate group-hover:text-primary transition-colors">The Innovator's Dilemma</p>
+<p class="text-xs text-text-secondary truncate">Clayton Christensen</p>
+</div>
+</div>
+<!-- Mini Card 2 -->
+<div class="flex gap-3 p-2 rounded-lg hover:bg-surface-dark transition-colors cursor-pointer group border border-transparent hover:border-surface-border">
+<div class="w-10 h-14 bg-cover bg-center rounded flex-shrink-0" data-alt="Book cover for Blue Ocean Strategy" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBCIYyLQ-OQINsRjTgirLklifEDTcLMp5Og8MRyxKWdIAzxvHIOxhQYTTHqmcS8M_KpEnOawwftntjylqXJ_AsWYVElioBeTHf8NyMA8sSxu9q6tYOgbK1tDDDuJ-c0WERjYKvGiZFTKaeZjDozTe6CXK3KhSwlPj7_cAlC1EHYmTH_cmBw25HmtWA3guRHwyEvHWFP2cRAys3tg7HyEFvSnH1blj3c04Ktk2NjMfr1zHuazmoGkO2OLh-Zo7Gh3TClnHnF69i8dGk");'></div>
+<div class="flex flex-col justify-center min-w-0">
+<p class="text-sm font-bold text-white truncate group-hover:text-primary transition-colors">Blue Ocean Strategy</p>
+<p class="text-xs text-text-secondary truncate">W. Chan Kim</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-surface-border">
+<button class="w-full h-10 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-[0_0_15px_rgba(140,37,244,0.3)]">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    Add New Source
+                </button>
+</div>
+</aside>
+<!-- Canvas Area -->
+<main class="flex-1 relative bg-background-dark overflow-hidden cursor-grab active:cursor-grabbing group/canvas">
+<!-- Infinite Grid Background -->
+<div class="absolute inset-0 opacity-20 pointer-events-none bg-[size:24px_24px] bg-grid-pattern"></div>
+<!-- Content Container (Simulating a movable viewport) -->
+<div class="absolute inset-0 flex items-center justify-center w-[120%] h-[120%] -left-[10%] -top-[10%]">
+<!-- SVG Connections Layer -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
+<defs>
+<marker id="arrowhead-support" markerheight="7" markerwidth="10" orient="auto" refx="9" refy="3.5">
+<polygon fill="#10b981" points="0 0, 10 3.5, 0 7"></polygon>
+</marker>
+<marker id="arrowhead-oppose" markerheight="7" markerwidth="10" orient="auto" refx="9" refy="3.5">
+<polygon fill="#f43f5e" points="0 0, 10 3.5, 0 7"></polygon>
+</marker>
+<marker id="arrowhead-neutral" markerheight="7" markerwidth="10" orient="auto" refx="9" refy="3.5">
+<polygon fill="#0ea5e9" points="0 0, 10 3.5, 0 7"></polygon>
+</marker>
+</defs>
+<!-- Connection to Support Node -->
+<path class="opacity-60" d="M 50% 50% C 65% 50%, 60% 25%, 75% 25%" fill="none" marker-end="url(#arrowhead-support)" stroke="#10b981" stroke-dasharray="5,5" stroke-width="2"></path>
+<!-- Connection to Oppose Node -->
+<path class="opacity-60" d="M 50% 50% C 35% 50%, 40% 20%, 25% 25%" fill="none" marker-end="url(#arrowhead-oppose)" stroke="#f43f5e" stroke-width="2"></path>
+<!-- Connection to Neutral Node -->
+<path class="opacity-60" d="M 50% 50% C 50% 65%, 25% 60%, 25% 75%" fill="none" stroke="#0ea5e9" stroke-width="2"></path>
+</svg>
+<!-- Central Node (Hero) -->
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] z-20">
+<div class="bg-surface-dark border-2 border-primary rounded-xl shadow-[0_0_30px_rgba(140,37,244,0.15)] flex flex-col overflow-hidden relative group transition-transform hover:scale-105 duration-300">
+<!-- Selection Glow -->
+<div class="absolute -inset-0.5 bg-primary/20 blur opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+<div class="p-4 flex gap-4 relative bg-surface-dark z-10">
+<div class="w-24 bg-cover bg-center rounded-lg shadow-lg shrink-0 aspect-[2/3]" data-alt="Book cover of The Innovator's Dilemma" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDoQZ0FWTOrh9f5nzPOS2SO5dFfmv27360bYGG7aA96Fw2l4qVE1eGJ2k_XHbTBLYGwBcektCDaHle0Pjw0ozx5rBiewqdPNI31VjEIH0qyYx5PbfUQvO9Y4TkyrifEg-MkTCYNqQzamG_9_2QOPmqafIqn2BJvbp0p72XhESu5D173xatCxwbCYL9-_c5OnCDWlH7QLZ-v3xwGY3On9s0QdlU70euUxws1SWmuTxGB2IjrvSUAgJuyRtl21gAkQM5ZC1_C3oGR4f0");'></div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex justify-between items-start">
+<h3 class="text-white text-lg font-bold leading-tight mb-1 truncate">The Innovator's Dilemma</h3>
+<button class="text-text-secondary hover:text-white"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</div>
+<p class="text-text-secondary text-sm mb-3">Clayton Christensen</p>
+<p class="text-gray-300 text-xs leading-relaxed line-clamp-3">Explains why companies doing everything right still lose their market leadership as new, unexpected competitors rise and take over.</p>
+<div class="mt-auto pt-3 flex gap-2">
+<span class="inline-flex items-center rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">Source</span>
+<span class="inline-flex items-center rounded-md bg-surface-border px-2 py-1 text-xs font-medium text-gray-400 ring-1 ring-inset ring-gray-500/10">1997</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Node 2: Opposing View (Top Left) -->
+<div class="absolute left-[25%] top-[25%] -translate-x-1/2 -translate-y-1/2 w-80 z-10">
+<div class="bg-surface-dark rounded-xl shadow-lg border-l-4 border-status-oppose flex overflow-hidden hover:ring-2 hover:ring-status-oppose/50 transition-all cursor-pointer">
+<div class="p-3 flex gap-3 w-full">
+<div class="w-16 bg-cover bg-center rounded shrink-0 aspect-[2/3]" data-alt="Book cover of The Lean Startup" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA4KYNJ14Ze-Hc_qI85ht5JiWuABuwUeOTkrQH7kEP00nmUu4grQCi0YWneL6PQpqgh_Rtk3KMwDL17YaHs7Rtxp2IA1NCjLDvn8bg2FUi3bZvFD9dckhWp8LRIHg0iseyU1pb1tE_WJMDbr_iJVFFyS564UR4T_CvVcsWXfSm5633x4_PhfTOZfQPuvkZ6Qzh6dIJ9Ps4_a9zclplvQ4oE6XyqMBK2O543FdnN9dMJke9MMhYCho0TxAjvZK2rwpAOqVCfAuknOj8");'></div>
+<div class="flex flex-col min-w-0">
+<h4 class="text-white text-sm font-bold leading-tight mb-0.5">The Lean Startup</h4>
+<p class="text-text-secondary text-xs mb-2">Eric Ries</p>
+<p class="text-gray-400 text-[10px] leading-snug line-clamp-2">Argues for iterative testing over rigid planning, contrasting slightly with Christensen's focus on structural failure.</p>
+<div class="mt-2 flex items-center gap-1 text-status-oppose">
+<span class="material-symbols-outlined text-[14px]">link_off</span>
+<span class="text-[10px] uppercase font-bold tracking-wider">Opposing View</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Simulating an open Context Menu for this node -->
+<div class="absolute -right-32 top-10 w-48 bg-[#1e1e24]/95 backdrop-blur-sm border border-surface-border rounded-lg shadow-2xl z-50 overflow-hidden flex flex-col py-1 animate-in fade-in zoom-in-95 duration-200 origin-top-left">
+<button class="flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white text-left transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span> Edit Details
+                        </button>
+<button class="flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white text-left transition-colors">
+<span class="material-symbols-outlined text-[18px]">hub</span> Add Connection
+                        </button>
+<button class="flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white text-left transition-colors">
+<span class="material-symbols-outlined text-[18px]">swap_horiz</span> Change Relation
+                        </button>
+<div class="h-px bg-surface-border my-1 mx-2"></div>
+<button class="flex items-center gap-3 px-4 py-2 text-sm text-status-oppose hover:bg-status-oppose/10 text-left transition-colors">
+<span class="material-symbols-outlined text-[18px]">delete</span> Delete Node
+                       </button>
+</div>
+</div>
+<!-- Node 3: Supporting View (Top Right) -->
+<div class="absolute left-[75%] top-[25%] -translate-x-1/2 -translate-y-1/2 w-80 z-10">
+<div class="bg-surface-dark rounded-xl shadow-lg border-l-4 border-status-support flex overflow-hidden hover:ring-2 hover:ring-status-support/50 transition-all cursor-pointer">
+<div class="p-3 flex gap-3 w-full">
+<div class="w-16 bg-cover bg-center rounded shrink-0 aspect-[2/3]" data-alt="Book cover of Blue Ocean Strategy" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAfYOnOmc1Va3s6J52ejRlGJGgmLtb1ODMW3TeX_AD67vhKgpmP6wtXWFeIsdHtvk9fqvsMhvgxcAlmu-Nv0ElAHzvFOyUIgpI1QCqW9Qc8Zzn2LX0JF7qkgpxznrP1FnI2jry3a1YxZAYb3UMQC0UfMrmYFmGcKB44vBuzbPe9oOE1XFpcV_CddjYwuFwgYYmWLTavaMX9BHxS8RrMjee5_SZmKWA2VF9iUopCaslYTDEjGxWGwcJHSYVo4dLVLslbIGJnQN84ZrI");'></div>
+<div class="flex flex-col min-w-0">
+<h4 class="text-white text-sm font-bold leading-tight mb-0.5">Blue Ocean Strategy</h4>
+<p class="text-text-secondary text-xs mb-2">W. Chan Kim</p>
+<p class="text-gray-400 text-[10px] leading-snug line-clamp-2">Provides a solution framework to the dilemma by creating new market space.</p>
+<div class="mt-2 flex items-center gap-1 text-status-support">
+<span class="material-symbols-outlined text-[14px]">link</span>
+<span class="text-[10px] uppercase font-bold tracking-wider">Supports</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Node 4: Neutral/Related (Bottom Left) -->
+<div class="absolute left-[25%] top-[75%] -translate-x-1/2 -translate-y-1/2 w-72 z-10">
+<div class="bg-surface-dark rounded-xl shadow-lg border-l-4 border-status-neutral flex overflow-hidden hover:ring-2 hover:ring-status-neutral/50 transition-all cursor-pointer opacity-80 hover:opacity-100">
+<div class="p-3 flex gap-3 w-full items-center">
+<div class="w-12 h-12 bg-surface-border rounded-full flex items-center justify-center shrink-0 text-white font-bold text-lg">SJ</div>
+<div class="flex flex-col min-w-0">
+<h4 class="text-white text-sm font-bold leading-tight mb-0.5">Steve Jobs Biography</h4>
+<p class="text-text-secondary text-[10px]">Walter Isaacson</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Controls Toolbar -->
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1 bg-surface-dark/90 backdrop-blur-md border border-surface-border rounded-full shadow-2xl z-50">
+<button aria-label="Zoom Out" class="w-10 h-10 flex items-center justify-center rounded-full text-text-secondary hover:text-white hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<div class="w-px h-4 bg-surface-border mx-1"></div>
+<span class="text-xs font-mono font-medium text-white min-w-[3rem] text-center">100%</span>
+<div class="w-px h-4 bg-surface-border mx-1"></div>
+<button aria-label="Zoom In" class="w-10 h-10 flex items-center justify-center rounded-full text-text-secondary hover:text-white hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button aria-label="Fit to Screen" class="w-10 h-10 flex items-center justify-center rounded-full text-text-secondary hover:text-white hover:bg-white/10 transition-colors ml-1">
+<span class="material-symbols-outlined">center_focus_strong</span>
+</button>
+</div>
+<!-- Floating Mini Map / Navigation Hint -->
+<div class="absolute bottom-8 right-8 w-40 h-28 bg-surface-dark border border-surface-border rounded-lg shadow-lg hidden lg:block overflow-hidden">
+<div class="w-full h-full bg-background-dark/50 relative">
+<!-- Mini nodes representation -->
+<div class="absolute left-1/2 top-1/2 w-8 h-6 bg-primary/40 -translate-x-1/2 -translate-y-1/2 rounded-sm border border-primary/50"></div>
+<div class="absolute left-[20%] top-[20%] w-6 h-4 bg-status-oppose/30 rounded-sm"></div>
+<div class="absolute left-[80%] top-[20%] w-6 h-4 bg-status-support/30 rounded-sm"></div>
+<!-- Viewport rect -->
+<div class="absolute inset-2 border-2 border-white/20 rounded-sm shadow-[0_0_0_100px_rgba(0,0,0,0.5)]"></div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
