@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Academy - Eğitim Platformu</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>🚀 DevOps Academy</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#topics">Konular</a></li>
+                <li><a href="#leaderboard">Liderlik Tablosu</a></li>
+                <li><a href="#profile">Profilim</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="btn btn-secondary">Giriş Yap</button>
+                <button class="btn btn-primary">Kayıt Ol</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2 class="hero-title">DevOps Yolculuğuna Hoş Geldin!</h2>
+                <p class="hero-subtitle">Git, Docker, Linux, Network ve daha fazlası ile pratik yaparak öğren</p>
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <div class="stat-number">1,234</div>
+                        <div class="stat-label">Aktif Öğrenci</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Eğitim Modülü</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Pratik Soru</div>
+                    </div>
+                </div>
+                <button class="btn btn-large btn-primary">Hemen Başla</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="dashboard-section">
+        <div class="container">
+            <h2 class="section-title">Dashboard</h2>
+            
+            <div class="progress-overview">
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <h3>Genel İlerleme</h3>
+                        <span class="badge badge-success">%65 Tamamlandı</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 65%"></div>
+                    </div>
+                    <div class="progress-details">
+                        <span>13/20 Konu Tamamlandı</span>
+                        <span>850 Puan</span>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-info">
+                            <div class="stat-value">15</div>
+                            <div class="stat-text">Tamamlanan Sınav</div>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-info">
+                            <div class="stat-value">%87</div>
+                            <div class="stat-text">Başarı Oranı</div>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-info">
+                            <div class="stat-value">5</div>
+                            <div class="stat-text">Kazanılan Rozet</div>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-info">
+                            <div class="stat-value">7</div>
+                            <div class="stat-text">Günlük Seri</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-activity">
+                <h3>Son Aktiviteler</h3>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon success">✓</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Docker Basics sınavını tamamladın</div>
+                            <div class="activity-meta">85/100 puan • 2 saat önce</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon info">📖</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Git Branching konusunu okudun</div>
+                            <div class="activity-meta">1 gün önce</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon warning">🏅</div>
+                        <div class="activity-content">
+                            <div class="activity-title">"Linux Master" rozetini kazandın</div>
+                            <div class="activity-meta">3 gün önce</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Topics Section -->
+    <section id="topics" class="topics-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Eğitim Konuları</h2>
+                <div class="filter-tabs">
+                    <button class="tab-btn active">Tümü</button>
+                    <button class="tab-btn">Başlangıç</button>
+                    <button class="tab-btn">Orta</button>
+                    <button class="tab-btn">İleri</button>
+                </div>
+            </div>
+
+            <div class="topics-grid">
+                <div class="topic-card">
+                    <div class="topic-header">
+                        <div class="topic-icon">📦</div>
+                        <span class="topic-level level-beginner">Başlangıç</span>
+                    </div>
+                    <h3 class="topic-title">Git & Version Control</h3>
+                    <p class="topic-description">Git temelleri, branching, merging ve collaboration workflow'ları</p>
+                    <div class="topic-stats">
+                        <span class="topic-stat">8 Döküman</span>
+                        <span class="topic-stat">25 Soru</span>
+                    </div>
+                    <div class="topic-progress">
+                        <div class="progress-bar-small">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                        <span class="progress-text">%75</span>
+                    </div>
+                    <button class="btn btn-block btn-primary">Devam Et</button>
+                </div>
+
+                <div class="topic-card">
+                    <div class="topic-header">
+                        <div class="topic-icon">🐳</div>
+                        <span class="topic-level level-beginner">Başlangıç</span>
+                    </div>
+                    <h3 class="topic-title">Docker Fundamentals</h3>
+                    <p class="topic-description">Container teknolojisi, Docker kurulumu, image ve container yönetimi</p>
+                    <div class="topic-stats">
+                        <span class="topic-stat">10 Döküman</span>
+                        <span class="topic-stat">30 Soru</span>
+                    </div>
+                    <div class="topic-progress">
+                        <div class="progress-bar-small">
+                            <div class="progress-fill" style="width: 50%"></div>
+                        </div>
+                        <span class="progress-text">%50</span>
+                    </div>
+                    <button class="btn btn-block btn-primary">Devam Et</button>
+                </div>
+
+                <div class="topic-card">
+                    <div class="topic-header">
+                        <div class="topic-icon">🐧</div>
+                        <span class="topic-level level-beginner">Başlangıç</span>
+                    </div>
+                    <h3 class="topic-title">Linux Essentials</h3>
+                    <p class="topic-description">Komut satırı, dosya sistemi, izinler ve temel sistem yönetimi</p>
+                    <div class="topic-stats">
+                        <span class="topic-stat">12 Döküman</span>
+                        <span class="topic-stat">35 Soru</span>
+                    </div>
+                    <div class="topic-progress">
+                        <div class="progress-bar-small">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <span class="progress-text">%100</span>
+                    </div>
+                    <button class="btn btn-block btn-success">Tamamlandı ✓</button>
+                </div>
+
+                <div class="topic-card">
+                    <div class="topic-header">
+                        <div class="topic-icon">🌐</div>
+                        <span class="topic-level level-intermediate">Orta</span>
+                    </div>
+                    <h3 class="topic-title">Network Basics</h3>
+                    <p class="topic-description">TCP/IP, DNS, HTTP/HTTPS protokolleri ve network troubleshooting</p>
+                    <div class="topic-stats">
+                        <span class="topic-stat">9 Döküman</span>
+                        <span class="topic-stat">28 Soru</span>
+                    </div>
+                    <div class="topic-progress">
+                        <div class="progress-bar-small">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="progress-text">%0</span>
+                    </div>
+                    <button class="btn btn-block btn-secondary">Başla</button>
+                </div>
+
+                <div class="topic-card">
+                    <div class="topic-header">
+                        <div class="topic-icon">⚙️</div>
+                        <span class="topic-level level-intermediate">Orta</span>
+                    </div>
+                    <h3 class="topic-title">CI/CD Pipelines</h3>
+                    <p class="topic-description">GitHub Actions, GitLab CI, Jenkins ile otomatik build ve deploy</p>
+                    <div class="topic-stats">
+                        <span class="topic-stat">7 Döküman</span>
+                        <span class="topic-stat">22 Soru</span>
+                    </div>
+                    <div class="topic-progress">
+                        <div class="progress-bar-small">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="progress-text">%0</span>
+                    </div>
+                    <button class="btn btn-block btn-secondary">Başla</button>
+                </div>
+
+                <div class="topic-card locked">
+                    <div class="topic-header">
+                        <div class="topic-icon">☸️</div>
+                        <span class="topic-level level-advanced">İleri</span>
+                    </div>
+                    <h3 class="topic-title">Kubernetes</h3>
+                    <p class="topic-description">Container orchestration, pods, services ve deployment strategies</p>
+                    <div class="topic-stats">
+                        <span class="topic-stat">15 Döküman</span>
+                        <span class="topic-stat">40 Soru</span>
+                    </div>
+                    <div class="lock-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <div class="lock-text">CI/CD tamamla</div>
+                    </div>
+                    <button class="btn btn-block btn-disabled" disabled>Kilitli</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Exam Preview Section -->
+    <section class="exam-section">
+        <div class="container">
+            <h2 class="section-title">Sınav Önizleme</h2>
+            
+            <div class="exam-container">
+                <div class="exam-header">
+                    <div class="exam-info">
+                        <h3>Docker Basics - Final Sınavı</h3>
+                        <div class="exam-meta">
+                            <span>20 Soru</span>
+                            <span>•</span>
+                            <span>30 Dakika</span>
+                            <span>•</span>
+                            <span>100 Puan</span>
+                        </div>
+                    </div>
+                    <div class="exam-timer">
+                        <div class="timer-icon">⏱️</div>
+                        <div class="timer-text">28:45</div>
+                    </div>
+                </div>
+
+                <div class="exam-progress-bar">
+                    <div class="exam-progress-fill" style="width: 35%"></div>
+                    <div class="exam-progress-text">Soru 7/20</div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-header">
+                        <span class="question-number">Soru 7</span>
+                        <span class="question-points">5 Puan</span>
+                    </div>
+                    <div class="question-text">
+                        <p>Bir Docker container'ının çalışan tüm process'lerini görmek için hangi komut kullanılır?</p>
+                    </div>
+                    <div class="question-options">
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="a">
+                            <span class="option-text">docker ps -a</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="b">
+                            <span class="option-text">docker top &lt;container_id&gt;</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="c">
+                            <span class="option-text">docker exec &lt;container_id&gt; ps aux</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="d">
+                            <span class="option-text">docker inspect &lt;container_id&gt;</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="exam-navigation">
+                    <button class="btn btn-secondary">← Önceki</button>
+                    <button class="btn btn-secondary">Soruyu İşaretle 🚩</button>
+                    <button class="btn btn-primary">Sonraki →</button>
+                </div>
+
+                <div class="question-grid">
+                    <div class="question-dot completed">1</div>
+                    <div class="question-dot completed">2</div>
+                    <div class="question-dot completed">3</div>
+                    <div class="question-dot completed">4</div>
+                    <div class="question-dot completed">5</div>
+                    <div class="question-dot completed">6</div>
+                    <div class="question-dot active">7</div>
+                    <div class="question-dot">8</div>
+                    <div class="question-dot">9</div>
+                    <div class="question-dot">10</div>
+                    <div class="question-dot">11</div>
+                    <div class="question-dot">12</div>
+                    <div class="question-dot">13</div>
+                    <div class="question-dot">14</div>
+                    <div class="question-dot flagged">15</div>
+                    <div class="question-dot">16</div>
+                    <div class="question-dot">17</div>
+                    <div class="question-dot">18</div>
+                    <div class="question-dot">19</div>
+                    <div class="question-dot">20</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leaderboard Section -->
+    <section id="leaderboard" class="leaderboard-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">🏆 Liderlik Tablosu</h2>
+                <div class="leaderboard-filters">
+                    <select class="filter-select">
+                        <option>Tüm Zamanlar</option>
+                        <option>Bu Hafta</option>
+                        <option>Bu Ay</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>Tüm Kategoriler</option>
+                        <option>Git</option>
+                        <option>Docker</option>
+                        <option>Linux</option>
+                        <option>Network</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="leaderboard-podium">
+                <div class="podium-item second">
+                    <div class="podium-avatar">👨‍💻</div>
+                    <div class="podium-name">Ayşe Y.</div>
+                    <div class="podium-score">2,450</div>
+                    <div class="podium-rank silver">2</div>
+                </div>
+                <div class="podium-item first">
+                    <div class="podium-crown">👑</div>
+                    <div class="podium-avatar">👩‍💻</div>
+                    <div class="podium-name">Mehmet K.</div>
+                    <div class="podium-score">3,120</div>
+                    <div class="podium-rank gold">1</div>
+                </div>
+                <div class="podium-item third">
+                    <div class="podium-avatar">🧑‍💻</div>
+                    <div class="podium-name">Can D.</div>
+                    <div class="podium-score">2,180</div>
+                    <div class="podium-rank bronze">3</div>
+                </div>
+            </div>
+
+            <div class="leaderboard-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sıra</th>
+                            <th>Kullanıcı</th>
+                            <th>Toplam Puan</th>
+                            <th>Tamamlanan Sınav</th>
+                            <th>Başarı Oranı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="highlight-row">
+                            <td><span class="rank-badge">4</span></td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar">🧑</div>
+                                    <span class="user-name">Sen</span>
+                                </div>
+                            </td>
+                            <td><strong>1,950</strong></td>
+                            <td>15</td>
+                            <td><span class="badge badge-success">%87</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="rank-badge">5</span></td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar">👨</div>
+                                    <span class="user-name">Ahmet S.</span>
+                                </div>
+                            </td>
+                            <td><strong>1,820</strong></td>
+                            <td>18</td>
+                            <td><span class="badge badge-success">%82</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="rank-badge">6</span></td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar">👩</div>
+                                    <span class="user-name">Zeynep A.</span>
+                                </div>
+                            </td>
+                            <td><strong>1,690</strong></td>
+                            <td>14</td>
+                            <td><span class="badge badge-warning">%78</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="rank-badge">7</span></td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar">🧑</div>
+                                    <span class="user-name">Emre T.</span>
+                                </div>
+                            </td>
+                            <td><strong>1,540</strong></td>
+                            <td>12</td>
+                            <td><span class="badge badge-success">%85</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="rank-badge">8</span></td>
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar">👨</div>
+                                    <span class="user-name">Burak M.</span>
+                                </div>
+                            </td>
+                            <td><strong>1,420</strong></td>
+                            <td>11</td>
+                            <td><span class="badge badge-warning">%79</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section id="profile" class="profile-section">
+        <div class="container">
+            <h2 class="section-title">Profilim</h2>
+            
+            <div class="profile-grid">
+                <div class="profile-sidebar">
+                    <div class="profile-card">
+                        <div class="profile-avatar-large">👨‍💻</div>
+                        <h3 class="profile-name">Ahmet Yılmaz</h3>
+                        <p class="profile-email">ahmet@example.com</p>
+                        <div class="profile-rank">
+                            <span class="rank-label">Sıralama:</span>
+                            <span class="rank-value">#4</span>
+                        </div>
+                        <button class="btn btn-block btn-secondary">Profili Düzenle</button>
+                    </div>
+
+                    <div class="badges-card">
+                        <h4>Rozetler</h4>
+                        <div class="badges-grid">
+                            <div class="badge-item earned">
+                                <div class="badge-icon">🎯</div>
+                                <div class="badge-name">İlk Sınav</div>
+                            </div>
+                            <div class="badge-item earned">
+                                <div class="badge-icon">🐧</div>
+                                <div class="badge-name">Linux Master</div>
+                            </div>
+                            <div class="badge-item earned">
+                                <div class="badge-icon">🔥</div>
+                                <div class="badge-name">7 Gün Seri</div>
+                            </div>
+                            <div class="badge-item earned">
+                                <div class="badge-icon">⚡</div>
+                                <div class="badge-name">Hız Canavarı</div>
+                            </div>
+                            <div class="badge-item earned">
+                                <div class="badge-icon">🏆</div>
+                                <div class="badge-name">Top 10</div>
+                            </div>
+                            <div class="badge-item locked">
+                                <div class="badge-icon">🐳</div>
+                                <div class="badge-name">Docker Pro</div>
+                            </div>
+                            <div class="badge-item locked">
+                                <div class="badge-icon">📦</div>
+                                <div class="badge-name">Git Wizard</div>
+                            </div>
+                            <div class="badge-item locked">
+                                <div class="badge-icon">👑</div>
+                                <div class="badge-name">Şampiyon</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-main">
+                    <div class="stats-overview-card">
+                        <h4>İstatistikler</h4>
+                        <div class="stats-overview-grid">
+                            <div class="overview-stat">
+                                <div class="overview-icon">📚</div>
+                                <div class="overview-data">
+                                    <div class="overview-value">13/20</div>
+                                    <div class="overview-label">Tamamlanan Konu</div>
+                                </div>
+                            </div>
+                            <div class="overview-stat">
+                                <div class="overview-icon">✅</div>
+                                <div class="overview-data">
+                                    <div class="overview-value">15</div>
+                                    <div class="overview-label">Geçilen Sınav</div>
+                                </div>
+                            </div>
+                            <div class="overview-stat">
+                                <div class="overview-icon">⭐</div>
+                                <div class="overview-data">
+                                    <div class="overview-value">1,950</div>
+                                    <div class="overview-label">Toplam Puan</div>
+                                </div>
+                            </div>
+                            <div class="overview-stat">
+                                <div class="overview-icon">📈</div>
+                                <div class="overview-data">
+                                    <div class="overview-value">%87</div>
+                                    <div class="overview-label">Ortalama Başarı</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="exam-history-card">
+                        <h4>Sınav Geçmişi</h4>
+                        <div class="exam-history-list">
+                            <div class="exam-history-item">
+                                <div class="exam-history-left">
+                                    <div class="exam-icon success">✓</div>
+                                    <div class="exam-details">
+                                        <div class="exam-name">Docker Basics</div>
+                                        <div class="exam-date">23 Ocak 2026</div>
+                                    </div>
+                                </div>
+                                <div class="exam-history-right">
+                                    <div class="exam-score">85/100</div>
+                                    <span class="badge badge-success">Geçti</span>
+                                </div>
+                            </div>
+                            <div class="exam-history-item">
+                                <div class="exam-history-left">
+                                    <div class="exam-icon success">✓</div>
+                                    <div class="exam-details">
+                                        <div class="exam-name">Linux Commands</div>
+                                        <div class="exam-date">21 Ocak 2026</div>
+                                    </div>
+                                </div>
+                                <div class="exam-history-right">
+                                    <div class="exam-score">92/100</div>
+                                    <span class="badge badge-success">Geçti</span>
+                                </div>
+                            </div>
+                            <div class="exam-history-item">
+                                <div class="exam-history-left">
+                                    <div class="exam-icon success">✓</div>
+                                    <div class="exam-details">
+                                        <div class="exam-name">Git Branching</div>
+                                        <div class="exam-date">18 Ocak 2026</div>
+                                    </div>
+                                </div>
+                                <div class="exam-history-right">
+                                    <div class="exam-score">78/100</div>
+                                    <span class="badge badge-success">Geçti</span>
+                                </div>
+                            </div>
+                            <div class="exam-history-item">
+                                <div class="exam-history-left">
+                                    <div class="exam-icon fail">✗</div>
+                                    <div class="exam-details">
+                                        <div class="exam-name">Network Protocols</div>
+                                        <div class="exam-date">15 Ocak 2026</div>
+                                    </div>
+                                </div>
+                                <div class="exam-history-right">
+                                    <div class="exam-score">58/100</div>
+                                    <span class="badge badge-danger">Kaldı</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-block btn-secondary">Tüm Geçmişi Görüntüle</button>
+                    </div>
+
+                    <div class="settings-card">
+                        <h4>Bildirim Ayarları</h4>
+                        <div class="settings-list">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-title">Email Bildirimleri</div>
+                                    <div class="setting-description">Yeni içerik ve güncellemeler için email al</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-title">Haftalık Özet</div>
+                                    <div class="setting-description">Haftalık ilerleme raporunu email ile al</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-title">Seri Hatırlatıcıları</div>
+                                    <div class="setting-description">Günlük seriniz kırılmadan önce hatırlatma</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>DevOps Academy</h4>
+                    <p>Açık kaynak DevOps eğitim platformu</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Bağlantılar</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Hakkımızda</a></li>
+                        <li><a href="#">Katkıda Bulun</a></li>
+                        <li><a href="#">Dokümantasyon</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Topluluk</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">GitHub</a></li>
+                        <li><a href="#">Discord</a></li>
+                        <li><a href="#">Twitter</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Yasal</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Kullanım Şartları</a></li>
+                        <li><a href="#">Gizlilik Politikası</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 DevOps Academy. MIT Lisansı ile açık kaynak.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-title">Sıralama Değişiklikleri</div>
+                                    <div class="setting-description">Liderlik tablosundaki değişiklikler için bildirim</div>
+                                </div>
+                                <label class="toggle
